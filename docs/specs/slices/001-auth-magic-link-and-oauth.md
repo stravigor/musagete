@@ -1,6 +1,6 @@
 ```yaml
 slice_id:        001
-status:          drafted
+status:          ready
 owner_turn:
 resource_type:   Entity
 tenancy:         platform

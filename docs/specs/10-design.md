@@ -1,9 +1,9 @@
 ```
 project:       musagete-kb
-status:        Draft
+status:        Signed
 relationship:
 date:          2026-05-09
-signed by:
+signed by:     Liva
 references:
   discovery:   ./00-discovery.md
   adrs:        ./adr/
@@ -236,8 +236,8 @@ Field-level shapes are deferred to slice Tech Specs.
 ## Signature
 
 ```
-Signed by:
-Date:
+Signed by: Liva
+Date: 2026-05-09
 ```
 
 ---
