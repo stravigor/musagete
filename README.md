@@ -66,8 +66,10 @@ bun install
 
 # 2. Configure environment
 cp .env.example .env
-# Fill in: DATABASE_URL, MEILI_MASTER_KEY, MAGIC_LINK_FROM,
-# GOOGLE_OAUTH_*, GITHUB_OAUTH_*, ANTHROPIC_API_KEY, OPENAI_API_KEY
+# Fill in: APP_KEY, DB_HOST/PORT/USER/PASSWORD/DATABASE,
+# MEILI_MASTER_KEY, MAIL_FROM, GOOGLE_CLIENT_ID/SECRET/REDIRECT_URL,
+# GITHUB_CLIENT_ID/SECRET/REDIRECT_URL, ANTHROPIC_API_KEY, OPENAI_API_KEY
+# (`bun strav generate:key` initializes APP_KEY for you on first run.)
 
 # 3. Start Meilisearch via Docker compose (Postgres assumed already running)
 docker compose up -d meili

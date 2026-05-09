@@ -109,6 +109,7 @@ The capabilities v1 will deliver. Each cites at least one gain creator or pain r
 - **V5** — Markdown is the storage format for `revisions.content`. Editor → markdown → editor must be lossless for the supported subset (CommonMark + tables + fenced code with language + footnotes + Mermaid fences); the test suite asserts the round-trip.
 - **V6** — Application logs are English-only and structured (`pino`-style JSON via Strav's logger); user-facing strings are wrapped through `t()` from day one even though only English ships in v1.
 - **V7** — All AI tool calls are logged with workspace_id, user_id, agent name, tool name, input hash, output token count; never with raw prompt text in production logs.
+- **V8** — Project-internal modules are referenced via `#`-prefixed subpath imports declared in `package.json`'s `imports` field — never via relative `../` paths. The aliases are: `#controllers/*`, `#middleware/*`, `#policies/*`, `#services/*`, `#models/*`, `#enums/*`, `#jobs/*`, `#schemas/*`, `#routes/*`, `#config/*`. (Code emitted by `@strav/cli` generators may use relative paths until the framework adopts subpath imports; that's a future improvement, not a slice-001 blocker.)
 
 ---
 
@@ -256,4 +257,12 @@ Architecture-level reversal: e.g., framework changed, tenancy model changed, or 
 
 ## Amendment log
 
-*(Append-only. Do not edit existing entries.)*
+### 2026-05-09 — Add convention V8 (subpath imports)
+Section: `Conventions`
+From:    Conventions list ended at V7 (AI tool-call logging).
+To:      Added V8 — project-internal modules use `#`-prefixed subpath imports declared in `package.json`'s `imports` field; relative `../` paths are forbidden in hand-written code. Lists the 10 aliases (`#controllers/*`, `#middleware/*`, `#policies/*`, `#services/*`, `#models/*`, `#enums/*`, `#jobs/*`, `#schemas/*`, `#routes/*`, `#config/*`).
+Why:     Surfaced during Build-T1 Checkpoint 2 — the Tech Spec said *where* files live but not *how* they import each other, and the auth-slice scaffold drifted into 17 relative `../../policies/auth_policy` style imports. Subpath imports are stable under refactors (move a file → relatives break, `#` aliases survive) and self-document where each module fits in the project's vocabulary. Pinning the convention here means every Tech Spec from now on can cite V8 by reference instead of re-arguing the import style per slice. The matching adapter amendment teaches the pipeline step map to point at V8.
+By:      Liva
+
+### YYYY-MM-DD — <one-line title of the amendment>
+Section: `<e.g. Gain creators & Pain relievers | In scope for v1 | Out of scope for v1 | Non-functional targets | Conventions | Schema sketch | Architecture sketch | Key decisions | Status | Relationship>`

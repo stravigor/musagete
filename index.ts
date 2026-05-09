@@ -2,6 +2,7 @@ import 'reflect-metadata'
 import { app } from '@strav/kernel'
 import { IslandBuilder, ViewEngine } from '@strav/view'
 import { providers } from './start/providers'
+import './start/routes'
 
 // Build islands + CSS before the server starts
 // Outputs: public/css/app.css (from SCSS) and public/builds/islands.js (Vue components)

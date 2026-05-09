@@ -12,9 +12,9 @@ Last re-order: 2026-05-09
 
 | # | ID  | Title                                                          | Status   | Depends on | Notes |
 |---|-----|----------------------------------------------------------------|----------|------------|-------|
-| 1 | [001](./slices/001-auth-magic-link-and-oauth.md) | Auth — magic link + Google/GitHub OAuth + TOTP            | ready    | —          | Pipeline showcase; deeply specified. Uses `@strav/auth`, `@strav/social`, `@strav/http`, `@strav/signal`. |
+| 1 | [001](./slices/001-auth-magic-link-and-oauth.md) | Auth — magic link + Google/GitHub OAuth + TOTP            | built       | —       | 9/9 BDD scenarios green; Build-T1 closed. Awaiting Integrate. |
 | 2 | [002](./slices/002-workspace-and-space-bootstrap.md) | Workspace + Space bootstrap (with templates and defaults) | drafted  | 001        | Multi-tenant RLS via `@strav/database`. Six space templates. |
-| 3 | [003](./slices/003-reader-editorial-layout.md) | Reader — editorial layout, light/dark, density, accent     | drafted  | 002        | No-JS read path; tokens per ADR-0003; `@strav/view`. |
+| 3 | [003](./slices/003-reader-editorial-layout.md) | Reader — editorial layout, light/dark, density, accent     | drafted  | 002        | No-JS read path; tokens per ADR-0003; `@strav/view`. **Inherits from slice 001:** owns `resources/css/tokens.css` and the auth `.strav` view (deferred per slice 001 Tech Spec amendment 2026-05-09). |
 | 4 | [004](./slices/004-editor-tiptap-with-ai-authoring.md) | Editor — TipTap Vue island + AI authoring slash commands  | drafted  | 003        | Markdown round-trip; `@strav/brain` tools per command. |
 | 5 | [005](./slices/005-search-cmdk-and-ask-the-kb.md) | Search — ⌘K palette + Ask the KB drawer                    | drafted  | 004        | `@strav/search` driver swap; `@strav/rag` paragraph index. |
 | 6 | [006](./slices/006-pr-review-with-ai-diff-explainer.md) | PR review — propose change, threads, AI summary, suggested reviewers | drafted | 004 | `@strav/signal` for thread updates; `@strav/brain` review agent. |

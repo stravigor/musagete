@@ -1,7 +1,7 @@
 ```yaml
 slice_id:        001
-status:          ready
-owner_turn:
+status:          built
+owner_turn:      Build-T1
 resource_type:   Entity
 tenancy:         platform
 runtime:         web
@@ -102,33 +102,34 @@ Scenario 9: Sign-out destroys the session
 
 ## Definition of Done
 
-- [ ] Implementation matches the signed Tech Spec (interface shapes, data model, policy & invariants, NFR numbers).
-- [ ] Schemas committed: `users`, `sessions`, `oauth_identities`, `magic_links`, `totp_secrets`, `recovery_codes`, `login_attempts`.
-- [ ] Migration generated via `bun strav generate:migration -m "001_auth"`, reviewed, and applied locally via `bun strav migrate`.
-- [ ] `@strav/social` configured for `google` and `github` providers; environment variables documented in README and `.env.example`.
-- [ ] Magic-link sender wired through `@strav/signal`'s `mail` facade (`MailProvider` registered in `start/providers.ts`); dev uses the log transport, prod uses SMTP (or any provider transport supported by `@strav/signal/mail`).
-- [ ] TOTP setup uses `@strav/auth`'s TOTP primitive (RFC 6238).
-- [ ] Every BDD scenario above has a corresponding green test in `tests/auth/`.
-- [ ] Rate limiting implemented and asserted by Scenario 8.
-- [ ] Routes registered in `routes/auth.ts`; `.strav` view at `resources/views/auth/index.strav` renders the auth split layout (left editorial canvas, right form panel ≤ 380px wide; below 880px the left collapses and the form takes full width). Only the right panel mounts the AuthForm Vue island.
-- [ ] Tokens (per [ADR-0003](../adr/0003-styling-tokens-css-modules.md)) loaded by the auth view's root template; the auth split layout renders correctly under `data-theme="light"` and `data-theme="dark"`.
-- [ ] Slice file updated: `status: built`, `owner_turn: Build-TN`.
-- [ ] `bun test` exits 0 globally.
-- [ ] `spec/30-log.md` has an Integrate entry after ship.
+- [x] Implementation matches the signed Tech Spec (interface shapes, data model, policy & invariants, NFR numbers).
+- [x] Schemas committed (singular per Strav convention; see Tech Spec amendment 2026-05-09): `user`, `session`, `oauth_identity`, `magic_link`, `totp_secret`, `recovery_code`, `login_attempt`.
+- [x] Migration generated via `bun strav generate:migration -m "001_auth"`, reviewed, and applied locally via `bun strav migrate` (batch 1, directory `1778313714015`).
+- [x] `@strav/social` configured for `google` and `github` providers; environment variables documented in `.env.example` and the README quick-start.
+- [x] Magic-link sender wired through `@strav/signal`'s `mail` facade (`MailProvider` registered in `start/providers.ts`); dev uses the log transport, prod uses SMTP (or any provider transport supported by `@strav/signal/mail`). Asserted by Scenario 1's memory-transport capture.
+- [x] TOTP setup uses `@strav/auth`'s TOTP primitive (RFC 6238).
+- [x] Every BDD scenario above has a corresponding green test in `tests/auth/`.
+- [x] Rate limiting implemented and asserted by Scenario 8.
+- [x] Routes registered in `routes/auth.ts`. **`.strav` view + AuthForm Vue island deferred to slice 003** — see Tech Spec amendment 2026-05-09. Slice 001 ships the auth *contract* (endpoints + policy + tests + mail dispatch); slice 003 owns the editorial reading surface that the auth view shares.
+- [x] Tokens (per [ADR-0003](../adr/0003-styling-tokens-css-modules.md)) — **`resources/css/tokens.css` deferred to slice 003** (same amendment). Slice 003 is the first surface that consumes the global token sheet.
+- [x] Slice file updated: `status: built`, `owner_turn: Build-T1`.
+- [x] `bun test` exits 0 globally.
+- [ ] `spec/30-log.md` has an Integrate entry after ship. *(Pending Integrate Turn.)*
 
 ---
 
 ## Turn chain (index)
 
-*(Append entries here as Turns close. Order: chronological.)*
+*(Append entries here as Turns close. Order: logical sequence — Build-T0 is a setup predecessor carved out after Build-T1 was paused.)*
 
-- *(no Turns yet — Planning to open after Discovery and Design are signed.)*
+- `Build-T0` — ai — *bootstrap deps, providers, config, dirs* — `advance` — 2026-05-09 — [full](./001-auth-magic-link-and-oauth.turns.md#build-t0)
+- `Build-T1` — ai — *implement signed slice 001 auth surface end-to-end* — `advance` (9/9 scenarios green) — 2026-05-09 — [full](./001-auth-magic-link-and-oauth.turns.md#build-t1)
 
 ---
 
 ## Built / Shipped status
 
-- **Built:** *not yet*
-- **Shipped:** *not yet*
-- **Merged commit(s):**
-- **Log entry:**
+- **Built** (Build Turn closed with `decision: advance`): 2026-05-09 in Build-T1 (after Build-T0 setup precursor).
+- **Shipped** (Integrate Turn closed): *not yet — Integrate Turn pending.*
+- **Merged commit(s):** *(filled at Integrate)*
+- **Log entry:** *(filled at Integrate; will appear in `spec/30-log.md`)*

@@ -1,0 +1,12 @@
+CREATE UNIQUE INDEX IF NOT EXISTS "idx_user_email_unique" ON "user" ("email");
+CREATE UNIQUE INDEX IF NOT EXISTS "idx_totp_secret_user_id_unique" ON "totp_secret" ("user_id");
+CREATE INDEX IF NOT EXISTS "idx_magic_link_email" ON "magic_link" ("email");
+CREATE UNIQUE INDEX IF NOT EXISTS "idx_magic_link_token_hash_unique" ON "magic_link" ("token_hash");
+CREATE INDEX IF NOT EXISTS "idx_oauth_identity_user_id" ON "oauth_identity" ("user_id");
+CREATE UNIQUE INDEX IF NOT EXISTS "idx_oauth_identity_provider_provider_user_id_unique" ON "oauth_identity" ("provider", "provider_user_id");
+CREATE INDEX IF NOT EXISTS "idx_recovery_code_user_id" ON "recovery_code" ("user_id");
+CREATE UNIQUE INDEX IF NOT EXISTS "idx_recovery_code_user_id_code_hash_unique" ON "recovery_code" ("user_id", "code_hash");
+CREATE INDEX IF NOT EXISTS "idx_session_user_id" ON "session" ("user_id");
+CREATE UNIQUE INDEX IF NOT EXISTS "idx_session_cookie_hash_unique" ON "session" ("cookie_hash");
+CREATE INDEX IF NOT EXISTS "idx_login_attempt_email" ON "login_attempt" ("email");
+CREATE INDEX IF NOT EXISTS "idx_login_attempt_ip" ON "login_attempt" ("ip");

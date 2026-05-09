@@ -15,7 +15,7 @@ references:
 
 `@strav/cli ^0.4.11` exposes **bulk schema-driven generators**. Schemas are hand-written; one command per phase regenerates *every* model or *every* API artifact from those schemas. Existing files are skipped by default to protect hand-edits — pass `--force` to overwrite. Custom logic that must survive regeneration should live in *separate* hand-written files alongside the generated ones; the generators are idempotent, the overrides are not regenerated.
 
-Output paths come from `config/generators.ts` (defaults shown below; override per project if needed).
+Output paths come from `config/generators.ts` (defaults shown below; override per project if needed). Hand-written modules import each other via `#`-prefixed subpaths declared in `package.json`'s `imports` field, per Design **V8** — never via relative `../` paths.
 
 | #  | Generic step            | Strav step                                                                                  | File location (default)                                                                                       | Hand-written or generated? |
 |----|-------------------------|---------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|----------------------------|
@@ -346,4 +346,11 @@ Changed: `§1. Pipeline step map`
 From:    *(no "Hand-written endpoint tail" sub-table — the pipeline implicitly assumed every endpoint came from `generate:api` against a schema)*
 To:      *(added a sub-table after the main pipeline, before the UI tail, with rows 5a–5d for hand-written controller, route file, service, and policy)*
 Why:     Slices 001 (auth: magic-link + OAuth + TOTP flows), 004 (AI authoring streaming endpoints), 005 (search palette + Ask-the-KB), and 006 (review + AI summary) all introduce endpoints that have **no schema source** — `generate:api` only emits CRUD-shaped surfaces. Without a hand-written tier, the adapter under-described how those slices ship, and the slice DoDs were citing `routes/<area>.ts` paths the adapter never named. The new sub-table makes the bespoke path first-class without disturbing the main pipeline numbering or the §2 checkpoint placement.
+By:      Liva
+
+### 2026-05-09 — Cite Design V8 (subpath imports) in §1
+Changed: `§1. Pipeline step map` (preamble paragraph)
+From:    "Output paths come from `config/generators.ts` (defaults shown below; override per project if needed)."
+To:      Added: "Hand-written modules import each other via `#`-prefixed subpaths declared in `package.json`'s `imports` field, per Design **V8** — never via relative `../` paths."
+Why:     Surfaced during Build-T1 Checkpoint 2 — the adapter spelled out *where* hand-written files live but said nothing about *how* they import each other, and the auth scaffold accumulated 17 relative `../../policies/auth_policy` imports before the gap was caught. Naming Design V8 inline here means future Build Turns can ack the import style by reference instead of re-discovering it per slice.
 By:      Liva

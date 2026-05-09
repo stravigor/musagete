@@ -9,12 +9,28 @@
     "test": "bun test tests/",
     "typecheck": "tsc --noEmit"
   },
+  "imports": {
+    "#controllers/*": "./app/http/controllers/*.ts",
+    "#middleware/*": "./app/http/middleware/*.ts",
+    "#policies/*": "./app/policies/*.ts",
+    "#services/*": "./app/services/*.ts",
+    "#models/*": "./app/models/*.ts",
+    "#enums/*": "./app/enums/*.ts",
+    "#jobs/*": "./app/jobs/*.ts",
+    "#schemas/*": "./database/schemas/*.ts",
+    "#routes/*": "./routes/*.ts",
+    "#config/*": "./config/*.ts",
+    "#start/*": "./start/*.ts"
+  },
   "dependencies": {
     "@strav/kernel": "link:@strav/kernel",
     "@strav/http": "link:@strav/http",
     "@strav/view": "link:@strav/view",
     "@strav/database": "link:@strav/database",
     "@strav/cli": "link:@strav/cli",
+    "@strav/auth": "link:@strav/auth",
+    "@strav/social": "link:@strav/social",
+    "@strav/signal": "link:@strav/signal",
     "vue": "^3.5.28",
     "reflect-metadata": "^0.2.2"
   },
