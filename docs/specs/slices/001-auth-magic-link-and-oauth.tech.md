@@ -1,8 +1,8 @@
 ```
 slice_id:      001-auth-magic-link-and-oauth
-status:        Draft
+status:        Signed
 date:          2026-05-09
-signed by:
+signed by:     Liva
 references:
   slice:       ./001-auth-magic-link-and-oauth.md
   design:      ../10-design.md
@@ -189,15 +189,17 @@ references:
 *(Must be empty at signing.)*
 
 - [ ] Confirm magic-link expiry of 15 minutes.
+=> Confirmed by Liva.
 - [ ] Confirm rate-limit window numbers (5 per email per 10 min; 20 per IP per 10 min).
+=> 5 per email per 10 min
 
 ---
 
 ## Signature
 
 ```
-Signed by:
-Date:
+Signed by: Liva
+Date: 2026-05-09
 ```
 
 ---
