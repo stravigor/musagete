@@ -1,9 +1,9 @@
 # ADR-0003 — Styling: design tokens via CSS @layer + CSS Modules
 
-Status:       Proposed
+Status:       Accepted
 Relationship:
 Date:         2026-05-09
-Decided by:
+Decided by:   Liva
 
 ---
 
@@ -169,8 +169,8 @@ The design uses near-zero elevation by intent. The only shadow is the modal shad
 ## Signature
 
 ```
-Decided by:
-Date:
+Decided by: Liva
+Date: 2026-05-09
 ```
 
 ---
