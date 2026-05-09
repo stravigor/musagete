@@ -5,7 +5,7 @@ owner_turn:
 resource_type:   Entity
 tenancy:         platform
 runtime:         web
-strav_packages:  [@strav/auth, @strav/social, @strav/http, @strav/database, @strav/cli]
+strav_packages:  [@strav/auth, @strav/social, @strav/http, @strav/signal, @strav/database, @strav/cli]
 ```
 
 ---
@@ -106,7 +106,7 @@ Scenario 9: Sign-out destroys the session
 - [ ] Schemas committed: `users`, `sessions`, `oauth_identities`, `magic_links`, `totp_secrets`, `recovery_codes`, `login_attempts`.
 - [ ] Migration generated via `bun strav generate:migration -m "001_auth"`, reviewed, and applied locally via `bun strav migrate`.
 - [ ] `@strav/social` configured for `google` and `github` providers; environment variables documented in README and `.env.example`.
-- [ ] Magic-link sender wired to the configured mail driver (dev: log driver; prod: SMTP via `@strav/http` mailer or equivalent).
+- [ ] Magic-link sender wired through `@strav/signal`'s `mail` facade (`MailProvider` registered in `start/providers.ts`); dev uses the log transport, prod uses SMTP (or any provider transport supported by `@strav/signal/mail`).
 - [ ] TOTP setup uses `@strav/auth`'s TOTP primitive (RFC 6238).
 - [ ] Every BDD scenario above has a corresponding green test in `tests/auth/`.
 - [ ] Rate limiting implemented and asserted by Scenario 8.

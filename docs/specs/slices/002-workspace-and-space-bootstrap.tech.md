@@ -36,9 +36,10 @@ Migration adds pgvector via `CREATE EXTENSION IF NOT EXISTS vector;` in the same
 
 ## Policy & invariants
 
-- **RLS:** every SELECT/INSERT/UPDATE/DELETE on tenant tables filters by current `workspace_id` from session context (set via `@strav/database` SET LOCAL on every request).
+- **RLS:** Per Design `V4` — every SELECT/INSERT/UPDATE/DELETE on tenant tables filters by current `workspace_id` from session context (set via `@strav/database` SET LOCAL on every request).
 - **Authz:** workspace creation is open to any signed-in user; space creation requires role ≥ `editor`; default toggles require role ≥ `admin`.
-- **Validation:** slugs match `[a-z0-9](-[a-z0-9]+)*`, length 2–48; names 1–80 chars.
+- **Validation:** slugs follow Design `V2` (lowercased, dash-joined, URL-safe). Names 1–80 chars.
+- **Timestamps:** Design `V1` (UTC `timestamptz` in storage; user-tz at display).
 - **Domain:** new revision rows are `status = 'published'` only when wired into `docs.current_revision_id`; templates emit one published revision per seeded doc.
 - **Boundary:** no controller in this slice accepts `workspace_id` from input; it is always derived from the URL `/workspaces/:slug/...` and verified against membership.
 

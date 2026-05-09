@@ -147,8 +147,8 @@ references:
 ## Dependencies
 
 - **Upstream slices:** none (this is the foundation slice).
-- **Framework features:** `@strav/auth` (sessions, magic links, TOTP); `@strav/social` (Google + GitHub OAuth); `@strav/http` (sessions middleware, mailer for magic-link send); `@strav/database` (migrations + ORM); `@strav/cli` (generators).
-- **Third-party services:** Google OAuth, GitHub OAuth, an SMTP transport in production (configurable; dev uses log mailer).
+- **Framework features:** `@strav/auth` (sessions, magic links, TOTP); `@strav/social` (Google + GitHub OAuth); `@strav/http` (sessions middleware, route groups); `@strav/signal` (`mail` facade for magic-link send via `MailProvider`); `@strav/database` (migrations + ORM); `@strav/cli` (generators).
+- **Third-party services:** Google OAuth, GitHub OAuth, an SMTP transport in production (configurable; dev uses `@strav/signal`'s log transport).
 
 ---
 

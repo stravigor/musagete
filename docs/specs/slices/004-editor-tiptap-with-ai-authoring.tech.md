@@ -32,12 +32,13 @@ references:
 
 ## Policy & invariants
 
-- **Authz:** save and AI commands require role ≥ `editor`.
+- **Authz:** save and AI commands require role ≥ `editor`. Tenancy enforced per Design `V4`.
 - **Validation:** content is UTF-8 markdown ≤ 1 MB; selection ≤ 8 KB; instruction ≤ 1 KB.
 - **Domain:**
+  - Storage format is markdown (Design `V5`); the round-trip is asserted by tests over the fixture corpus.
   - Save with `status="published"` updates `docs.current_revision_id`; with `status="draft"` does not.
   - Rate limit: ≤ 30 AI authoring calls per user per minute.
-- **Cross-cutting:** every AI call writes `ai_calls`; provider error messages are never echoed to the client (only an error class).
+- **Cross-cutting:** Design `V7` — every AI call writes `ai_calls` (workspace_id, user_id, agent, tool, input_hash, output token count); raw prompt text never appears in production logs. Provider error messages are never echoed to the client (only an error class).
 
 ## NFR targets
 

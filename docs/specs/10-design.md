@@ -181,8 +181,11 @@ boundary: platform
   |--------------------|------------------|---------------------------------------------------|
   | users              | Entity           | Platform user accounts (cross-workspace identity)  |
   | sessions           | Event            | Active user sessions (cookie-keyed, TTL'd)         |
-  | login_attempts     | Event            | Magic-link / OAuth / TOTP attempts; rate-limit basis |
   | oauth_identities   | Association      | (user, provider, provider_user_id) tuples           |
+  | magic_links        | Event            | Issued magic-link tokens; consumed-once, TTL'd     |
+  | totp_secrets       | Component        | Per-user TOTP secret + enabled flag                 |
+  | recovery_codes     | Component        | Per-user single-use 2FA recovery codes              |
+  | login_attempts     | Event            | Magic-link / OAuth / TOTP attempts; rate-limit basis |
 
 boundary: tenant (workspace_id FK on every row, RLS-enforced)
   | Resource           | Classification   | Purpose                                           |

@@ -29,12 +29,12 @@ references:
 
 ## Policy & invariants
 
-- **Authz:** workspace member ≥ `reader`.
+- **Authz:** workspace member ≥ `reader`. Tenancy enforced per Design `V4`.
 - **Validation:** query length ≤ 256; question length ≤ 1024.
 - **Domain:**
   - Hits are scoped to the current `workspace_id` via RLS; the search backend is also workspace-partitioned.
   - The Ask-the-KB agent must call `cite_and_answer` exactly once; if it returns without that call, the response is `{ paragraph_ids: [], answer_md: "", reason: "no_grounding" }`.
-- **Cross-cutting:** every Ask call writes `ai_calls`; the agent's input_hash is the SHA-256 of `(workspace_id, question)`.
+- **Cross-cutting:** Design `V7` — every Ask call writes `ai_calls`; the agent's input_hash is the SHA-256 of `(workspace_id, question)`.
 
 ## NFR targets
 

@@ -35,12 +35,13 @@ references:
 
 ## Policy & invariants
 
-- **Authz:** propose change ≥ `editor`; merge ≥ `admin` or doc maintainer; comment ≥ `reader` if `space_defaults.allow_comments`.
+- **Authz:** propose change ≥ `editor`; merge ≥ `admin` or doc maintainer; comment ≥ `reader` if `space_defaults.allow_comments`. Tenancy enforced per Design `V4`.
 - **Validation:** anchor.paragraph_idx within source revision; text ≤ 5000 chars.
 - **Domain:**
   - A Change cannot be merged if its base ≠ doc's current revision (409).
   - The review-summarizer agent's `summarize_diff` tool takes paragraph deltas and returns the structured envelope; no free-form output.
   - Suggested reviewers union = maintainers ∪ top-3 by max(cosine similarity) of diff-paragraph embeddings vs. authored-paragraph embeddings.
+- **Cross-cutting:** Design `V7` — every AI summarizer call writes an `ai_calls` row.
 
 ## NFR targets
 

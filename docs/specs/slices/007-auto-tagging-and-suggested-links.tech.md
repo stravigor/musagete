@@ -32,13 +32,13 @@ references:
 
 ## Policy & invariants
 
-- **Authz:** apply/dismiss require role ≥ `editor` (author) or maintainer.
+- **Authz:** apply/dismiss require role ≥ `editor` (author) or maintainer. Tenancy enforced per Design `V4`.
 - **Validation:** score ∈ [0, 1]; only suggestions with score > threshold (configurable, default 0.5) are written.
 - **Domain:**
   - The tagger agent calls `propose_tags({ candidates: [{ tag_id, score }] })` exactly once; tags must be from the workspace pool.
   - Embeddings are reused across revisions by `content_hash` to avoid re-embedding unchanged paragraphs.
   - Dismissed tags are not re-suggested for the same `(doc_id, tag_id)` for 30 days.
-- **Cross-cutting:** every job execution writes an `ai_calls` row when an agent is invoked.
+- **Cross-cutting:** Design `V7` — every job execution writes an `ai_calls` row when an agent is invoked.
 
 ## NFR targets
 
