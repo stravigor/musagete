@@ -20,7 +20,7 @@ so that **I can navigate quickly and ask grounded questions without leaving the 
 
 ## Context
 
-The search showcase: Meilisearch (dev + prod, via Docker compose) accessed through `@strav/search`'s driver abstraction so the controller never imports the Meili SDK directly. The Ask-the-KB agent is restricted to a single output tool, `cite_and_answer({ paragraph_ids[], answer_md })` — the agent literally cannot return ungrounded text. Embeddings are computed by slice 007's job; for v1's first ship, this slice can also run an inline backfill if no embeddings exist yet.
+The search showcase: Meilisearch (dev + prod, via Docker compose) accessed through `@strav/search`'s driver abstraction so the controller never imports the Meili SDK directly. The Ask-the-KB agent is restricted to a single output tool, `cite_and_answer({ paragraph_ids[], answer_md })` — the agent literally cannot return ungrounded text. Embeddings are computed by slice 007's job; for v1's first ship, this slice can also run an inline backfill if no `embedding` rows exist yet.
 
 Links:
 
@@ -69,7 +69,7 @@ Scenario 4: Ungrounded queries refuse cleanly
 - [ ] `@strav/search` configured in `config/search.ts`; default driver is `meili`. `MUSAGETE_SEARCH_DRIVER` env var is wired so future deployments can swap, but only Meilisearch is supported in v1.
 - [ ] `compose.yaml` ships a Meilisearch service for local dev.
 - [ ] `Doc` model carries the `searchable()` mixin; reindex on revision publish.
-- [ ] `@strav/rag` paragraph index over `embeddings`; chunker handles paragraphs > 800 tokens.
+- [ ] `@strav/rag` paragraph index over the `embedding` table; chunker handles paragraphs > 800 tokens.
 - [ ] Ask-the-KB agent's tool allowlist is exactly `[retrieve, cite_and_answer]`.
 - [ ] CmdKPalette and AskKBDrawer islands mount in the app shell template.
 - [ ] BDD scenarios green; latency assertion runs in CI on a 250-doc fixture.

@@ -21,13 +21,13 @@ references:
 
 ## Data model
 
-No new tables. Reads from `docs`, `revisions`, `spaces`. May denormalize `revisions.html_cache` (text) for pre-rendered Mermaid + sanitized HTML, populated by the save handler in slice 004.
+No new tables. Reads from `doc`, `revision`, `space`. May denormalize `revision.html_cache` (text) for pre-rendered Mermaid + sanitized HTML, populated by the save handler in slice 004.
 
 ## Policy & invariants
 
 - **Authz:** workspace member with role ≥ `reader` for non-public spaces.
 - **Validation:** slug shape `[a-z0-9](-[a-z0-9]+)*`.
-- **Domain:** the served revision is always `docs.current_revision_id`; never a draft.
+- **Domain:** the served revision is always `doc.current_revision_id`; never a draft.
 - **Boundary:** RLS scopes all reads to the current `workspace_id`.
 - **Cross-cutting:** no Vue island is mounted unless `data-want-topbar="true"` is on the body; default is no JavaScript.
 

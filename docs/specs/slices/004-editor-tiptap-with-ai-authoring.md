@@ -39,7 +39,7 @@ Scenario 1: Save creates a new immutable revision
   Given an editor with content matching the current revision
   When the user types changes and clicks "Save"
   Then a new Revision row exists with parent_revision_id = the previous revision
-    And docs.current_revision_id is updated to the new revision (if status="published")
+    And doc.current_revision_id is updated to the new revision (if status="published")
 
 Scenario 2: Markdown round-trip is lossless for the supported subset
   Given a markdown fixture from the round-trip corpus
@@ -51,13 +51,13 @@ Scenario 3: /rewrite slash command rewrites the selection
   When the user invokes /rewrite with instruction "make this more concise"
   Then the server agent returns a rewritten paragraph
     And the editor replaces the selection with the rewrite (streamed)
-    And an ai_calls row is recorded with agent="authoring.rewrite", workspace_id, user_id
+    And an ai_call row is recorded with agent="authoring.rewrite", workspace_id, user_id
 
 Scenario 4: AI command failure is surfaced, not swallowed
   Given the AI provider returns an error
   When /rewrite is invoked
   Then the editor shows an inline error toast and leaves the selection unchanged
-    And the ai_calls row records success=false with the error class (not the message)
+    And the ai_call row records success=false with the error class (not the message)
 
 Scenario 5: Save fails on cross-tenant doc id
   Given a doc id whose workspace_id ≠ the session's workspace_id
@@ -73,5 +73,5 @@ Scenario 5: Save fails on cross-tenant doc id
 - [ ] Markdown serializer round-trip test runs over a ≥ 20-doc fixture corpus.
 - [ ] Slash commands `/rewrite`, `/summarize`, `/outline`, `/tone` route to `POST /ai/authoring/<command>` controllers.
 - [ ] Each authoring controller invokes a `@strav/brain` agent with an explicit tool allowlist.
-- [ ] `ai_calls` row written for each invocation.
+- [ ] `ai_call` row written for each invocation.
 - [ ] BDD scenarios green; round-trip property test green.

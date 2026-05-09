@@ -1,0 +1,13 @@
+@layout('layouts/app')
+
+@section('content')
+  <h1>Create a space in {{ workspace.name }}</h1>
+  <p>
+    Pick a template, name it, and pick the per-space defaults. The template's
+    folders + starter docs are seeded for you when you finish step 4.
+  </p>
+  <vue:create-space-wizard
+    :workspace-slug="{{ workspace.slug }}"
+    :templates="{{ templates }}"
+  />
+@end

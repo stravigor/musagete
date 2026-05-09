@@ -20,7 +20,7 @@ so that **discoverability improves without me having to remember to tag things, 
 
 ## Context
 
-The save handler enqueues a job. The job computes paragraph embeddings (the same ones slice 005 retrieves over), runs a `tagger` agent against the new revision, and writes `tag_suggestions` rows the author can apply or dismiss. Crucially, suggestions are never auto-applied — `G6` is "surface, not write".
+The save handler enqueues a job. The job computes paragraph embeddings (the same ones slice 005 retrieves over), runs a `tagger` agent against the new revision, and writes `tag_suggestion` rows the author can apply or dismiss. Crucially, suggestions are never auto-applied — `G6` is "surface, not write".
 
 Links:
 
@@ -42,22 +42,22 @@ Scenario 1: Save enqueues an embedding + tagging job
     And the job dispatch is < 30s p95 from save
 
 Scenario 2: Job computes embeddings for new paragraphs only
-  Given r10 had 12 paragraphs with embeddings, r11 changes 3 paragraphs
+  Given r10 had 12 paragraphs with embedding rows, r11 changes 3 paragraphs
   When the job runs
-  Then exactly 3 new embeddings rows are created for r11
-    And the unchanged 9 embeddings are reused from r10 by content_hash
+  Then exactly 3 new embedding rows are created for r11
+    And the unchanged 9 embedding rows are reused from r10 by content_hash
 
-Scenario 3: Tagger proposes tags via tag_suggestions
+Scenario 3: Tagger proposes tags via tag_suggestion
   Given a workspace tag pool [deploy, runbook, postgres, security]
   When the job runs against a revision about Postgres tuning
-  Then tag_suggestions rows exist with tag_id ∈ pool, score > threshold
-    And no doc_tags row is auto-created
+  Then tag_suggestion rows exist with tag_id ∈ pool, score > threshold
+    And no doc_tag row is auto-created
 
 Scenario 4: Suggested links surface to the author
-  Given the embeddings index includes 5 docs cosine-similar to r11 above 0.7
+  Given the embedding index includes 5 docs cosine-similar to r11 above 0.7
   When the author opens the doc
   Then up to 5 "Suggested links" appear in the byline area
-    And clicking "Add" creates a doc_tag or stores the link in a maintained suggestions box
+    And clicking "Add" creates a doc_tag row or stores the link in a maintained suggestions box
 
 Scenario 5: Author dismisses a suggestion
   Given a tag_suggestion row
@@ -70,8 +70,8 @@ Scenario 5: Author dismisses a suggestion
 
 ## Definition of Done
 
-- [ ] `tag_suggestions` table created with status enum (proposed/applied/dismissed).
-- [ ] `embed_revision` job computes embeddings; reuses by content_hash.
+- [ ] `tag_suggestion` table created with status enum (proposed/applied/dismissed).
+- [ ] `embed_revision` job computes embedding rows; reuses by content_hash.
 - [ ] `tagger` agent declares tool allowlist `[propose_tags]` (no free-form text).
 - [ ] Suggestions UI appears in the doc byline (non-intrusive).
 - [ ] BDD scenarios all green.

@@ -16,19 +16,19 @@ references:
 ## Interface contract
 
 - *(No new public HTTP routes.)* Internal:
-- Job: `embed_revision` — payload `{ revision_id }` → computes embeddings, runs tagger, writes `tag_suggestions`.
-- `POST /docs/:doc_id/suggestions/:id/apply` — author or maintainer; promotes a tag suggestion to `doc_tags`.
+- Job: `embed_revision` — payload `{ revision_id }` → computes embeddings, runs tagger, writes `tag_suggestion` rows.
+- `POST /docs/:doc_id/suggestions/:id/apply` — author or maintainer; promotes a tag suggestion to a `doc_tag` row.
 - `POST /docs/:doc_id/suggestions/:id/dismiss` — author or maintainer; status → "dismissed".
 
 ## Data model
 
-| Resource          | Boundary | Notes |
-|-------------------|----------|-------|
-| `tags`            | tenant   | id, workspace_id, name, slug; unique(workspace_id, slug) |
-| `doc_tags`        | tenant   | (doc_id, tag_id, applied_by, applied_at) |
-| `tag_suggestions` | tenant   | id, doc_id, revision_id, tag_id, score, status enum(proposed/applied/dismissed), created_at, decided_at |
+| Resource         | Boundary | Notes |
+|------------------|----------|-------|
+| `tag`            | tenant   | id, workspace_id, name, slug; unique(workspace_id, slug) |
+| `doc_tag`        | tenant   | (doc_id, tag_id, applied_by, applied_at) |
+| `tag_suggestion` | tenant   | id, doc_id, revision_id, tag_id, score, status enum(proposed/applied/dismissed), created_at, decided_at |
 
-`embeddings.content_hash` (already in slice 005) is used to dedupe paragraph embeddings between revisions.
+`embedding.content_hash` (already in slice 005) is used to dedupe paragraph embeddings between revisions.
 
 ## Policy & invariants
 
@@ -38,7 +38,7 @@ references:
   - The tagger agent calls `propose_tags({ candidates: [{ tag_id, score }] })` exactly once; tags must be from the workspace pool.
   - Embeddings are reused across revisions by `content_hash` to avoid re-embedding unchanged paragraphs.
   - Dismissed tags are not re-suggested for the same `(doc_id, tag_id)` for 30 days.
-- **Cross-cutting:** Design `V7` — every job execution writes an `ai_calls` row when an agent is invoked.
+- **Cross-cutting:** Design `V7` — every job execution writes an `ai_call` row when an agent is invoked.
 
 ## NFR targets
 
@@ -47,7 +47,7 @@ references:
 
 ## Dependencies
 
-- Upstream: 005 (embeddings table + RAG infrastructure).
+- Upstream: 005 (`embedding` table + RAG infrastructure).
 - Framework: `@strav/queue`, `@strav/brain`, `@strav/rag`, `@strav/database`.
 - Third-party: Anthropic API.
 

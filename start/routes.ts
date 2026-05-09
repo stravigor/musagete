@@ -10,6 +10,7 @@
 
 // Hand-written routes:
 import '#routes/auth'
+import '#routes/workspaces'
 
 // Generated API routes (uncomment once `start/api_routes.ts` is generated):
 // import './api_routes'

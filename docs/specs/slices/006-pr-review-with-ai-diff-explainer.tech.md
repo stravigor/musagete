@@ -20,18 +20,18 @@ references:
 - `GET /d/:slug/review/:change_id` — returns the review page (mounts ReviewPanel island).
 - `POST /changes/:change_id/threads` — body `{ anchor: { paragraph_idx, char_range }, text }` → creates a Thread + first Message.
 - `POST /threads/:thread_id/messages` — body `{ text }` → adds a Message; emits to `@strav/signal` channel.
-- `POST /changes/:change_id/merge` — admin or maintainer; advances `docs.current_revision_id` to source.
+- `POST /changes/:change_id/merge` — admin or maintainer; advances `doc.current_revision_id` to source.
 - `POST /ai/review/summarize` — body `{ change_id }` → JSON `{ summary_md, paragraph_indices: number[] }`.
 - *Errors:* 403 role insufficient; 404 RLS-denied; 409 merge against stale base.
 
 ## Data model
 
-| Resource | Boundary | Notes |
-|----------|----------|-------|
-| `changes`  | tenant | id, workspace_id, doc_id, source_revision_id, base_revision_id, author_id, status enum(open/approved/merged/closed), created_at, merged_at |
-| `threads`  | tenant | id, change_id, anchor jsonb (paragraph_idx + char range), author_id, resolved_at |
-| `messages` | tenant | id, thread_id, author_id, text, created_at |
-| `change_reviewers` | tenant | (change_id, user_id, source enum(maintainer/embedding/manual)) |
+| Resource           | Boundary | Notes |
+|--------------------|----------|-------|
+| `change`           | tenant   | id, workspace_id, doc_id, source_revision_id, base_revision_id, author_id, status enum(open/approved/merged/closed), created_at, merged_at |
+| `thread`           | tenant   | id, change_id, anchor jsonb (paragraph_idx + char range), author_id, resolved_at |
+| `message`          | tenant   | id, thread_id, author_id, text, created_at |
+| `change_reviewer`  | tenant   | (change_id, user_id, source enum(maintainer/embedding/manual)) |
 
 ## Policy & invariants
 
@@ -41,7 +41,7 @@ references:
   - A Change cannot be merged if its base ≠ doc's current revision (409).
   - The review-summarizer agent's `summarize_diff` tool takes paragraph deltas and returns the structured envelope; no free-form output.
   - Suggested reviewers union = maintainers ∪ top-3 by max(cosine similarity) of diff-paragraph embeddings vs. authored-paragraph embeddings.
-- **Cross-cutting:** Design `V7` — every AI summarizer call writes an `ai_calls` row.
+- **Cross-cutting:** Design `V7` — every AI summarizer call writes an `ai_call` row.
 
 ## NFR targets
 
@@ -51,7 +51,7 @@ references:
 
 ## Dependencies
 
-- Upstream: 004 (revisions, ai_calls), 005 (embeddings).
+- Upstream: 004 (revision rows, `ai_call` table), 005 (`embedding` table).
 - Framework: `@strav/database`, `@strav/http`, `@strav/signal`, `@strav/brain`, `@strav/rag`.
 - Third-party: `diff-match-patch` for word-level diff.
 

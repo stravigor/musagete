@@ -25,10 +25,10 @@ references:
 
 ## Data model
 
-| Resource    | Boundary | Notes |
-|-------------|----------|-------|
-| `revisions` | tenant   | adds `message` text and `status` enum(draft/published); existing FK to `docs` |
-| `ai_calls`  | tenant   | id, workspace_id, user_id, agent, tool, input_hash, output_tokens, success, error_class, created_at |
+| Resource   | Boundary | Notes |
+|------------|----------|-------|
+| `revision` | tenant   | adds `message` text and `status` enum(draft/published); existing FK to `doc` |
+| `ai_call`  | tenant   | id, workspace_id, user_id, agent, tool, input_hash, output_tokens, success, error_class, created_at |
 
 ## Policy & invariants
 
@@ -36,9 +36,9 @@ references:
 - **Validation:** content is UTF-8 markdown ≤ 1 MB; selection ≤ 8 KB; instruction ≤ 1 KB.
 - **Domain:**
   - Storage format is markdown (Design `V5`); the round-trip is asserted by tests over the fixture corpus.
-  - Save with `status="published"` updates `docs.current_revision_id`; with `status="draft"` does not.
+  - Save with `status="published"` updates `doc.current_revision_id`; with `status="draft"` does not.
   - Rate limit: ≤ 30 AI authoring calls per user per minute.
-- **Cross-cutting:** Design `V7` — every AI call writes `ai_calls` (workspace_id, user_id, agent, tool, input_hash, output token count); raw prompt text never appears in production logs. Provider error messages are never echoed to the client (only an error class).
+- **Cross-cutting:** Design `V7` — every AI call writes an `ai_call` row (workspace_id, user_id, agent, tool, input_hash, output token count); raw prompt text never appears in production logs. Provider error messages are never echoed to the client (only an error class).
 
 ## NFR targets
 

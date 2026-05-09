@@ -54,7 +54,7 @@ Scenario 3: AI summary appears and cites the diff
 
 Scenario 4: Suggested reviewers reflect maintainership and content
   Given the doc has maintainers [@ada, @grace]
-    And the diff body is highly similar (cosine > 0.85) to embeddings authored by @hopper
+    And the diff body is highly similar (cosine > 0.85) to embedding rows authored by @hopper
   When the review page loads
   Then the "Suggested reviewers" rail lists @ada, @grace, @hopper
 
@@ -68,8 +68,8 @@ Scenario 5: Adding a thread comment fires a signal to subscribers
 
 ## Definition of Done
 
-- [ ] Change, Thread, Message tables created with FKs to revisions and users.
-- [ ] Word-level diff computed on demand via `diff-match-patch`; cached on `changes.diff_cache_html` for the AI summarizer.
+- [ ] `change`, `thread`, `message` tables created with FKs to `revision` and `user`.
+- [ ] Word-level diff computed on demand via `diff-match-patch`; cached on `change.diff_cache_html` for the AI summarizer.
 - [ ] `review-summarizer` agent ships in `app/services/ai/agents/review-summarizer.agent.ts`; tool allowlist = `[summarize_diff]`.
 - [ ] Suggested reviewers computed from doc maintainership + embedding similarity to the diff.
 - [ ] `@strav/signal` channel `change:<change_id>:threads` carries new-message events.

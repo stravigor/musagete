@@ -72,6 +72,6 @@ Scenario 5: Marginalia anchors highlight
 
 - [ ] `resources/css/tokens.css` contains the token set verbatim per [ADR-0003](../adr/0003-styling-tokens-css-modules.md), including light/dark, density, and accent presets.
 - [ ] `resources/views/docs/read.strav` renders a published doc end-to-end without invoking any Vue island for the read path.
-- [ ] Mermaid is rendered server-side at template time (or pre-rendered at save time and cached on `revisions`).
+- [ ] Mermaid is rendered server-side at template time (or pre-rendered at save time and cached on `revision`).
 - [ ] Theme, density, and accent preferences are read from cookies set by the optional Topbar island.
 - [ ] BDD scenarios all green, including the JS-disabled scenario asserted with a no-JS HTML fixture test.

@@ -21,14 +21,14 @@ references:
 - **C3** — `@strav/rag` paragraph index over revisions, joined to a `@strav/brain` agent whose only output tool is `cite_and_answer({ paragraph_ids[], answer_md })`; the agent is configured with `allowed_tools = [cite_and_answer]` so ungrounded text cannot be returned → creates `G3`.
 - **C4** — TipTap Vue island exposes a slash menu whose commands (`/rewrite`, `/summarize`, `/outline`, `/tone`) call HTTP endpoints backed by `@strav/brain` agents, streaming results back into the editor → creates `G4`.
 - **C5** — A "review" Vue island renders side-by-side word diff + an AI summary panel populated by a `review-summarizer` agent, plus a "suggested reviewers" chip rail derived from doc maintainership and embedding similarity to the diff → creates `G5`.
-- **C6** — Save handler enqueues an `@strav/queue` job that computes embeddings for the new revision and runs a `tagger` agent over them; agent output writes to a `tag_suggestions` table surfaced to the author, never auto-applied → creates `G6`.
+- **C6** — Save handler enqueues an `@strav/queue` job that computes embeddings for the new revision and runs a `tagger` agent over them; agent output writes to the `tag_suggestion` table surfaced to the author, never auto-applied → creates `G6`.
 - **C7** — `@strav/search` driver abstraction; the ⌘K controller uses the unified API. Meilisearch is the v1 driver in dev and prod (Docker compose for the dev container); the abstraction itself is the showcase artifact → creates `G8`.
 
 ### Pain relievers
 
 - **R1** (relieves `P1`) — Inline diff in the reader and a dedicated PR-style review surface with threaded comments make change first-class.
 - **R2** (relieves `P2`) — AI woven through editor (C4), review (C5), discovery (C6), and search (C3) — not a single drawer.
-- **R3** (relieves `P3`) — Markdown is the storage format on `revisions.content`; TipTap projects onto it through a markdown serializer, round-trip lossless for headings, lists, code, tables, callouts, and links.
+- **R3** (relieves `P3`) — Markdown is the storage format on `revision.content`; TipTap projects onto it through a markdown serializer, round-trip lossless for headings, lists, code, tables, callouts, and links.
 - **R4** (relieves `P4`) — Five-role permission model (owner / admin / editor / reader / guest) with per-space overrides, enforced by Postgres RLS on `workspace_id` and per-table policy functions in `@strav/database`.
 - **R5** (relieves `P6`) — Token set in [ADR-0003](./adr/0003-styling-tokens-css-modules.md) wired as CSS custom properties; Newsreader serif display with `font-variation-settings: 'opsz' …` on headlines; drop caps on `.lede::first-letter`. The product's editorial opinion is delivered through tokens, not screenshots.
 
@@ -105,8 +105,8 @@ The capabilities v1 will deliver. Each cites at least one gain creator or pain r
 - **V1** — Timestamps stored as UTC `timestamptz` in Postgres; rendered in the user's timezone at display time.
 - **V2** — Slugs are lowercase ASCII, dash-joined, URL-safe; reserved words listed in `config/slugs.ts`.
 - **V3** — IDs are bigserial primary keys for tenant tables; uuid only when an external system requires opacity.
-- **V4** — All tenant tables carry a non-null `workspace_id` with a foreign key to `workspaces.id`; RLS policy is `tenant_isolation` defined in `@strav/database` config.
-- **V5** — Markdown is the storage format for `revisions.content`. Editor → markdown → editor must be lossless for the supported subset (CommonMark + tables + fenced code with language + footnotes + Mermaid fences); the test suite asserts the round-trip.
+- **V4** — All tenant tables carry a non-null `workspace_id` with a foreign key to `workspace.id`; RLS policy is `tenant_isolation` defined in `@strav/database` config.
+- **V5** — Markdown is the storage format for `revision.content`. Editor → markdown → editor must be lossless for the supported subset (CommonMark + tables + fenced code with language + footnotes + Mermaid fences); the test suite asserts the round-trip.
 - **V6** — Application logs are English-only and structured (`pino`-style JSON via Strav's logger); user-facing strings are wrapped through `t()` from day one even though only English ships in v1.
 - **V7** — All AI tool calls are logged with workspace_id, user_id, agent name, tool name, input hash, output token count; never with raw prompt text in production logs.
 - **V8** — Project-internal modules are referenced via `#`-prefixed subpath imports declared in `package.json`'s `imports` field — never via relative `../` paths. The aliases are: `#controllers/*`, `#middleware/*`, `#policies/*`, `#services/*`, `#models/*`, `#enums/*`, `#jobs/*`, `#schemas/*`, `#routes/*`, `#config/*`. (Code emitted by `@strav/cli` generators may use relative paths until the framework adopts subpath imports; that's a future improvement, not a slice-001 blocker.)
@@ -180,32 +180,32 @@ The capabilities v1 will deliver. Each cites at least one gain creator or pain r
 boundary: platform
   | Resource           | Classification   | Purpose                                           |
   |--------------------|------------------|---------------------------------------------------|
-  | users              | Entity           | Platform user accounts (cross-workspace identity)  |
-  | sessions           | Event            | Active user sessions (cookie-keyed, TTL'd)         |
-  | oauth_identities   | Association      | (user, provider, provider_user_id) tuples           |
-  | magic_links        | Event            | Issued magic-link tokens; consumed-once, TTL'd     |
-  | totp_secrets       | Component        | Per-user TOTP secret + enabled flag                 |
-  | recovery_codes     | Component        | Per-user single-use 2FA recovery codes              |
-  | login_attempts     | Event            | Magic-link / OAuth / TOTP attempts; rate-limit basis |
+  | user               | Entity           | Platform user accounts (cross-workspace identity)  |
+  | session            | Event            | Active user sessions (cookie-keyed, TTL'd)         |
+  | oauth_identity     | Association      | (user, provider, provider_user_id) tuples           |
+  | magic_link         | Event            | Issued magic-link tokens; consumed-once, TTL'd     |
+  | totp_secret        | Component        | Per-user TOTP secret + enabled flag                 |
+  | recovery_code      | Component        | Per-user single-use 2FA recovery codes              |
+  | login_attempt      | Event            | Magic-link / OAuth / TOTP attempts; rate-limit basis |
 
 boundary: tenant (workspace_id FK on every row, RLS-enforced)
   | Resource           | Classification   | Purpose                                           |
   |--------------------|------------------|---------------------------------------------------|
-  | workspaces         | Entity           | Tenant root                                        |
-  | memberships        | Association      | (workspace, user, role)                             |
-  | spaces             | Entity           | Top-level containers; tree of folders inside       |
+  | workspace          | Entity           | Tenant root                                        |
+  | membership         | Association      | (workspace, user, role)                             |
+  | space              | Entity           | Top-level containers; tree of folders inside       |
   | space_defaults     | Component        | Per-space toggles: review, comments, ai_index      |
-  | docs               | Entity           | Logical document; pointer to current revision      |
-  | revisions          | Event            | Immutable content snapshots (markdown)             |
-  | changes            | Entity           | PR-style proposals (revision → revision)           |
-  | threads            | Entity           | Comment threads anchored on a change or revision   |
-  | messages           | Event            | Individual comments within threads                 |
-  | tags               | Reference        | Workspace-scoped tag pool                           |
-  | doc_tags           | Association      | (doc, tag) with applied_by + applied_at             |
-  | tag_suggestions    | Event            | AI-proposed tags awaiting author action             |
-  | embeddings         | Component        | (revision_id, paragraph_idx, vector) for RAG       |
-  | search_documents   | Component        | Mirror table (or Meili index) for FTS              |
-  | ai_calls           | Event            | Tool-call audit trail (workspace, user, agent, tool) |
+  | doc                | Entity           | Logical document; pointer to current revision      |
+  | revision           | Event            | Immutable content snapshots (markdown)             |
+  | change             | Entity           | PR-style proposals (revision → revision)           |
+  | thread             | Entity           | Comment threads anchored on a change or revision   |
+  | message            | Event            | Individual comments within threads                 |
+  | tag                | Reference        | Workspace-scoped tag pool                           |
+  | doc_tag            | Association      | (doc, tag) with applied_by + applied_at             |
+  | tag_suggestion     | Event            | AI-proposed tags awaiting author action             |
+  | embedding          | Component        | (revision_id, paragraph_idx, vector) for RAG       |
+  | search_document    | Component        | Mirror table (or Meili index) for FTS              |
+  | ai_call            | Event            | Tool-call audit trail (workspace, user, agent, tool) |
   | audit_log          | Event            | Stub in v1; structured user actions for v2 admin    |
 ```
 
@@ -264,5 +264,9 @@ To:      Added V8 — project-internal modules use `#`-prefixed subpath imports 
 Why:     Surfaced during Build-T1 Checkpoint 2 — the Tech Spec said *where* files live but not *how* they import each other, and the auth-slice scaffold drifted into 17 relative `../../policies/auth_policy` style imports. Subpath imports are stable under refactors (move a file → relatives break, `#` aliases survive) and self-document where each module fits in the project's vocabulary. Pinning the convention here means every Tech Spec from now on can cite V8 by reference instead of re-arguing the import style per slice. The matching adapter amendment teaches the pipeline step map to point at V8.
 By:      Liva
 
-### YYYY-MM-DD — <one-line title of the amendment>
-Section: `<e.g. Gain creators & Pain relievers | In scope for v1 | Out of scope for v1 | Non-functional targets | Conventions | Schema sketch | Architecture sketch | Key decisions | Status | Relationship>`
+### 2026-05-09 — Singularize table names in Schema sketch + Conventions V4/V5
+Section: `Conventions`, `Schema sketch`
+From:    V4 referenced `workspaces.id`; V5 referenced `revisions.content`. Schema sketch used plural names throughout (users, sessions, …, workspaces, memberships, spaces, docs, revisions, changes, threads, messages, tags, doc_tags, tag_suggestions, embeddings, search_documents, ai_calls).
+To:      V4 references `workspace.id`; V5 references `revision.content`. Schema sketch uses singular names (user, session, oauth_identity, magic_link, totp_secret, recovery_code, login_attempt, workspace, membership, space, space_defaults, doc, revision, change, thread, message, tag, doc_tag, tag_suggestion, embedding, search_document, ai_call). `space_defaults` and `audit_log` already singular and unchanged.
+Why:     Strav uses singular table names (`defineSchema('user', …)` → table `user`); slice 001's Build-T1 Checkpoint 1 surfaced this convention and amended its Tech Spec accordingly. The Design schema sketch was not updated at that time. Slice 002 is the next slice to author schemas, so the Build-T0 sweep brings every spec document into alignment before any new schema files exist. Forward-looking benefit: future Tech Specs cite Design table names by reference and inherit the singular form automatically.
+By:      Liva

@@ -22,10 +22,10 @@ references:
 
 ## Data model
 
-| Resource           | Boundary | Notes |
-|--------------------|----------|-------|
-| `embeddings`       | tenant   | id, workspace_id, doc_id, revision_id, paragraph_idx, vector vector(1536), content_hash; unique(revision_id, paragraph_idx). Dimension matches `text-embedding-3-small` per ADR-0005. |
-| `search_documents` | tenant   | denormalized projection for the search backend (mirrors title, body, tags, updated_at, slug); also indexed in Meilisearch (prod) |
+| Resource          | Boundary | Notes |
+|-------------------|----------|-------|
+| `embedding`       | tenant   | id, workspace_id, doc_id, revision_id, paragraph_idx, vector vector(1536), content_hash; unique(revision_id, paragraph_idx). Dimension matches `text-embedding-3-small` per ADR-0005. |
+| `search_document` | tenant   | denormalized projection for the search backend (mirrors title, body, tags, updated_at, slug); also indexed in Meilisearch (prod) |
 
 ## Policy & invariants
 
@@ -34,7 +34,7 @@ references:
 - **Domain:**
   - Hits are scoped to the current `workspace_id` via RLS; the search backend is also workspace-partitioned.
   - The Ask-the-KB agent must call `cite_and_answer` exactly once; if it returns without that call, the response is `{ paragraph_ids: [], answer_md: "", reason: "no_grounding" }`.
-- **Cross-cutting:** Design `V7` — every Ask call writes `ai_calls`; the agent's input_hash is the SHA-256 of `(workspace_id, question)`.
+- **Cross-cutting:** Design `V7` — every Ask call writes an `ai_call` row; the agent's input_hash is the SHA-256 of `(workspace_id, question)`.
 
 ## NFR targets
 
@@ -43,7 +43,7 @@ references:
 
 ## Dependencies
 
-- Upstream: 004 (revisions exist; `ai_calls` table exists).
+- Upstream: 004 (revision rows exist; `ai_call` table exists).
 - Framework: `@strav/search`, `@strav/rag`, `@strav/brain`.
 - Third-party: Meilisearch (dev + prod, run via Docker compose), pgvector (dev + prod), OpenAI Embeddings API (`text-embedding-3-small`).
 
@@ -56,7 +56,7 @@ references:
 
 - Tests run against Meilisearch via the dev Docker compose service; CI starts the same container.
 - Workspace-scoping test (Scenario 2) seeds two disjoint workspaces and asserts strict isolation in the hit list — at the search backend, not just at the controller.
-- Ungrounded test: seed a workspace with embeddings for unrelated topics, query something off-topic, assert `reason: "no_grounding"`.
+- Ungrounded test: seed a workspace with `embedding` rows for unrelated topics, query something off-topic, assert `reason: "no_grounding"`.
 
 ## Open questions
 

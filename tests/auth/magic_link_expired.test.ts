@@ -43,8 +43,17 @@ describe('GET /auth/magic/:token — Scenario 3: An expired magic link is reject
     `) as Array<{ id: number }>
     expect(users).toHaveLength(0)
 
-    // 4) No session row was created
-    const sessions = (await sql`SELECT "id" FROM "session"`) as Array<{ id: number }>
+    // 4) No session row was created for the requesting email.
+    //    Scoped by user to avoid races with parallel test files that may
+    //    have committed sessions (e.g., slice 002's seeded sessions —
+    //    its tests use `transaction: false` because Bun's `sql.begin()`
+    //    does not nest as a SAVEPOINT inside an outer BEGIN).
+    const sessions = (await sql`
+      SELECT "s"."id"
+      FROM "session" "s"
+      INNER JOIN "user" "u" ON "u"."id" = "s"."user_id"
+      WHERE "u"."email" = ${email}
+    `) as Array<{ id: number }>
     expect(sessions).toHaveLength(0)
 
     // 5) The magic_link row remains unconsumed (the failed attempt didn't touch it)

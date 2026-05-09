@@ -1,0 +1,12 @@
+ALTER TABLE "space_defaults" ADD CONSTRAINT "fk_space_defaults_workspace_id_space_id" FOREIGN KEY ("workspace_id", "space_id") REFERENCES "space" ("workspace_id", "id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "space_defaults" DROP CONSTRAINT IF EXISTS "fk_space_defaults_workspace_id_workspace_id_space_id_space_id";
+ALTER TABLE "doc" ADD CONSTRAINT "fk_doc_workspace_id_space_id" FOREIGN KEY ("workspace_id", "space_id") REFERENCES "space" ("workspace_id", "id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "doc" ADD CONSTRAINT "fk_doc_workspace_id_current_revision_id" FOREIGN KEY ("workspace_id", "current_revision_id") REFERENCES "revision" ("workspace_id", "id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "doc" DROP CONSTRAINT IF EXISTS "fk_doc_workspace_id_workspace_id_current_revision_id_current_revision_id";
+ALTER TABLE "doc" DROP CONSTRAINT IF EXISTS "fk_doc_workspace_id_workspace_id_space_id_space_id";
+ALTER TABLE "doc" ADD CONSTRAINT "uq_doc_workspace_id_space_id_slug" UNIQUE ("workspace_id", "space_id", "slug");
+ALTER TABLE "doc" DROP CONSTRAINT IF EXISTS "uq_doc_space_id_slug";
+ALTER TABLE "revision" ADD CONSTRAINT "fk_revision_workspace_id_doc_id" FOREIGN KEY ("workspace_id", "doc_id") REFERENCES "doc" ("workspace_id", "id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "revision" ADD CONSTRAINT "fk_revision_workspace_id_parent_revision_id" FOREIGN KEY ("workspace_id", "parent_revision_id") REFERENCES "revision" ("workspace_id", "id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "revision" DROP CONSTRAINT IF EXISTS "fk_revision_workspace_id_workspace_id_doc_id_doc_id";
+ALTER TABLE "revision" DROP CONSTRAINT IF EXISTS "fk_revision_workspace_id_workspace_id_parent_revision_id_parent_revision_id";

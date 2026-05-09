@@ -1,7 +1,7 @@
 ```yaml
 slice_id:        002
-status:          drafted
-owner_turn:
+status:          shipped
+owner_turn:      Integrate-T1
 resource_type:   Entity
 tenancy:         tenant
 runtime:         web
@@ -37,14 +37,15 @@ Links:
 ```gherkin
 Scenario 1: First workspace creation
   Given a signed-in user with no workspaces
-  When the user POSTs name "Acme Cloud", slug "acme-cloud", region "self-hosted"
+  When the user POSTs name "Acme Cloud", slug "acme-cloud"
   Then a Workspace row is created with the user as owner
     And a Membership row links (workspace, user, role="owner")
-    And the response redirects to "/" inside that workspace
+    And the user's last_workspace_id is set to the new workspace
+    And the response redirects to "/" — which resolves to "/workspaces/acme-cloud"
 
 Scenario 2: Space creation from "engineering" template
   Given a workspace exists with the user as owner
-  When the user runs the Create Space wizard with template "engineering", name "Platform", visibility "workspace"
+  When the user runs the Create Space wizard with template "engineering", name "Platform", visibility "protected"
   Then a Space row is created with workspace_id, slug "platform", template "engineering"
     And the seeded folder structure (Runbooks, ADRs, On-call, API Reference) is present
     And at least one seeded Doc + initial Revision exists per folder
@@ -69,10 +70,11 @@ Scenario 5: Slug uniqueness within a workspace
 
 ## Definition of Done
 
-- [ ] Schemas committed: `workspaces`, `memberships`, `spaces`, `space_defaults`, `docs`, `revisions`.
-- [ ] Migration generated via `bun strav generate:migration -m "002_workspaces_and_spaces"` and applied via `bun strav migrate`; pgvector extension enabled (used by later slices but installed here).
-- [ ] RLS policies registered via `@strav/database` for each tenant table; `workspace_id` is required on every tenant-table query.
-- [ ] Six template seeders ship under `database/seeders/space-templates/`.
-- [ ] Wizard view at `resources/views/spaces/new.strav` mounts a CreateSpaceWizard Vue island as a 4-step modal (Template → Identity → Access → Members). Six templates: Blank, Engineering (runbooks/ADRs/on-call/API ref), Product (roadmap/specs/changelog), People & Process (handbook/onboarding/retros), Security & Compliance (SOC2/threat models, PR-review on by default), Public API Docs (OpenAPI ingestion, code samples, versioned).
-- [ ] BDD scenarios green; cross-tenant denial test asserts at the SQL layer, not just the controller.
-- [ ] Slice file updated; `bun test` passes.
+- [x] Schemas committed: `workspace`, `membership`, `space`, `space_defaults`, `doc`, `revision`. Plus an additive column on the existing `user` schema: `last_workspace_id BIGINT NULL`.
+- [x] Migration generated via `bun strav generate:migration -m "002_tenancy"` and applied via `bun strav migrate`. (pgvector extension is **not** part of this migration — deferred to slice 005/007 once `@strav/database` ships first-class extension management; see `docs/notes/strav-pgvector-extension.md`.)
+- [x] RLS via `@strav/database`'s `tenanted: true` schema flag — every tenant table carries `workspace_id` and the `tenant_isolation` policy is auto-emitted; tenant tables use `t.tenantedBigSerial()` so each workspace counts ids 1, 2, 3 … independently.
+- [x] Tenant-context middleware at `app/http/middleware/tenant_context.ts` — single-pool design (resolves `:slug` → `workspace.id` on the app pool since `workspace` is the tenant registry, not RLS-scoped; verifies membership inside `withTenant(id, …)`; calls `next()` still inside the `withTenant` block so controller-side queries inherit the tenant context). Bound to the `/workspaces/:slug/...` route group only — the workspace-creation route runs without tenant scope.
+- [x] Six template seeders shipped at `app/services/spaces/space_templates.ts` (Tech Spec amendment 4: this is a runtime registry consumed by `createSpace`, not a `bun strav seed`-time seeder, so it lives next to the service rather than under `database/seeders/`). Six templates populated (Blank ships empty by design); other five carry one placeholder doc per template-named folder ("Add your first runbook here." etc.). Substantive starter content deferred per Build-T0 resolution.
+- [x] Wizard view at `resources/views/spaces/new.strav` mounts a `CreateSpaceWizard` Vue island as a 4-step modal (Template → Identity → Access → Members). Step 4 ships as a v1 placeholder ("you'll be the first member; invitations ship later") since invitation flow is deferred to v2 People & Access. Wizard styling uses ad-hoc `<style module>` CSS in the SFC; theme tokens land in slice 003.
+- [x] BDD scenarios green (5/5 acceptance pass). Cross-tenant denial (Scenario 4) asserts at the SQL layer via `pg_class.relforcerowsecurity` + `pg_policies` shape; the empirical "cross-tenant SELECT returns 0 rows" sub-assertion auto-skips when `current_user.rolbypassrls = true` (deferred operator step: create a non-BYPASSRLS Postgres role for the regular pool, then the empirical assertion runs).
+- [x] Slice file updated (status → `built`); `bun test` passes (19 pass / 1 skip / 0 fail / 147 expect() calls across 13 files).
