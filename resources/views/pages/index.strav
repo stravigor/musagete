@@ -1,0 +1,32 @@
+@layout('layouts/app')
+
+@section('content')
+  <h3>Welcome <em>Strav Spring</em></h3>
+  <p>
+    You're all set. Your project is live and ready to build. <br/>
+    Blazing fast, powered by Bun and Vue.js
+  </p>
+  <vue:counter/>
+  <div class="features">
+    <div class="feature">
+      <h4>Schema-First Architecture</h4>
+      <p>Define your database schema once, automatically migrations and models. No more manual SQL and model boilerplate.</p>
+    </div>
+    <div class="feature">
+      <h4>Vue Islands</h4>
+      <p>Embed Vue.js components as interactive islands within server-rendered HTML. Get reactivity where you need it without the complexity of a full SPA.</p>
+    </div>
+    <div class="feature">
+      <h4>AI as a First-Class Citizen</h4>
+      <p>Built-in AI agents, workflows, and memory management with multi-provider support (Claude, GPT, Gemini). Create AI-powered features with a single import.</p>
+    </div>
+    <div class="feature">
+      <h4>Zero-Config Real-Time Stack</h4>
+      <p>WebSocket broadcasting, multi-channel notifications, and transactional email built-in. From chat to live updates, ship real-time features instantly.</p>
+    </div>
+  </div>
+  <div class="links">
+    <a href="https://spring.strav.dev/docs" target="_blank">Documentation</a>
+    <a href="https://github.com/stravigor/strav" target="_blank">GitHub</a>
+  </div>
+@end
