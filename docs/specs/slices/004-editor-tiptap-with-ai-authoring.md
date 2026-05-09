@@ -69,7 +69,7 @@ Scenario 5: Save fails on cross-tenant doc id
 
 ## Definition of Done
 
-- [ ] `resources/ts/islands/Editor.vue` mounts TipTap headless with the supported extensions.
+- [ ] `resources/islands/Editor.vue` mounts TipTap headless with the supported extensions.
 - [ ] Markdown serializer round-trip test runs over a ≥ 20-doc fixture corpus.
 - [ ] Slash commands `/rewrite`, `/summarize`, `/outline`, `/tone` route to `POST /ai/authoring/<command>` controllers.
 - [ ] Each authoring controller invokes a `@strav/brain` agent with an explicit tool allowlist.

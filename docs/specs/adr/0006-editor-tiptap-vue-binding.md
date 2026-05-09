@@ -17,7 +17,7 @@ The decision now is which editor library and how it binds to Vue inside Strav's 
 
 ## Decision
 
-Use **TipTap (headless mode) wrapped as a single Vue island** under `resources/ts/islands/Editor.vue`. The editor stores content as markdown on `revisions.content`; TipTap projects onto a markdown document via a serializer/deserializer pair (TipTap's `@tiptap/extension-markdown`-style implementation, configured for our supported subset: CommonMark + tables + fenced code with language + footnotes + Mermaid fences). CodeMirror 6 is loaded lazily for the optional source-mode pane.
+Use **TipTap (headless mode) wrapped as a single Vue island** under `resources/islands/Editor.vue`. The editor stores content as markdown on `revisions.content`; TipTap projects onto a markdown document via a serializer/deserializer pair (TipTap's `@tiptap/extension-markdown`-style implementation, configured for our supported subset: CommonMark + tables + fenced code with language + footnotes + Mermaid fences). CodeMirror 6 is loaded lazily for the optional source-mode pane.
 
 The markdown round-trip (`V5`) is asserted by tests; any markdown shape the editor cannot losslessly round-trip is either added to the supported subset or rejected by validation.
 
@@ -68,7 +68,7 @@ TipTap's headless API + a markdown serializer is the cleanest path to `R3` and `
 
 ## Verification hooks
 
-- [ ] `resources/ts/islands/Editor.vue` is the single editor mount.
+- [ ] `resources/islands/Editor.vue` is the single editor mount.
 - [ ] A round-trip test exists for a fixture corpus (≥ 20 docs) and is part of the global suite.
 - [ ] CodeMirror 6 is dynamically imported, not bundled into the editor's initial chunk.
 

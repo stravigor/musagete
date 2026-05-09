@@ -72,9 +72,9 @@ cp .env.example .env
 # 3. Start Meilisearch via Docker compose (Postgres assumed already running)
 docker compose up -d meili
 
-# 4. Apply migrations (creates pgvector extension; tables; seeds)
-bun strav db:migrate
-bun strav db:seed
+# 4. Apply migrations (creates pgvector extension and tables) and seed
+bun strav migrate
+bun strav seed
 
 # 5. Run the dev server with hot reload
 bun run dev

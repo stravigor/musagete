@@ -104,7 +104,7 @@ Scenario 9: Sign-out destroys the session
 
 - [ ] Implementation matches the signed Tech Spec (interface shapes, data model, policy & invariants, NFR numbers).
 - [ ] Schemas committed: `users`, `sessions`, `oauth_identities`, `magic_links`, `totp_secrets`, `recovery_codes`, `login_attempts`.
-- [ ] Migrations generated, reviewed, applied locally via `bun strav db:migrate`.
+- [ ] Migration generated via `bun strav generate:migration -m "001_auth"`, reviewed, and applied locally via `bun strav migrate`.
 - [ ] `@strav/social` configured for `google` and `github` providers; environment variables documented in README and `.env.example`.
 - [ ] Magic-link sender wired to the configured mail driver (dev: log driver; prod: SMTP via `@strav/http` mailer or equivalent).
 - [ ] TOTP setup uses `@strav/auth`'s TOTP primitive (RFC 6238).

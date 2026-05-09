@@ -70,7 +70,7 @@ Scenario 5: Slug uniqueness within a workspace
 ## Definition of Done
 
 - [ ] Schemas committed: `workspaces`, `memberships`, `spaces`, `space_defaults`, `docs`, `revisions`.
-- [ ] Migrations applied via `bun strav db:migrate`; pgvector extension enabled (used by later slices but installed here).
+- [ ] Migration generated via `bun strav generate:migration -m "002_workspaces_and_spaces"` and applied via `bun strav migrate`; pgvector extension enabled (used by later slices but installed here).
 - [ ] RLS policies registered via `@strav/database` for each tenant table; `workspace_id` is required on every tenant-table query.
 - [ ] Six template seeders ship under `database/seeders/space-templates/`.
 - [ ] Wizard view at `resources/views/spaces/new.strav` mounts a CreateSpaceWizard Vue island as a 4-step modal (Template → Identity → Access → Members). Six templates: Blank, Engineering (runbooks/ADRs/on-call/API ref), Product (roadmap/specs/changelog), People & Process (handbook/onboarding/retros), Security & Compliance (SOC2/threat models, PR-review on by default), Public API Docs (OpenAPI ingestion, code samples, versioned).

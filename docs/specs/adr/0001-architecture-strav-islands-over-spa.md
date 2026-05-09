@@ -22,7 +22,7 @@ Reading is the headline job (Discovery `G2`). Editing, search, and review are in
 
 ## Decision
 
-We adopt **Strav's island architecture**: pages are `.strav` server-rendered templates under `resources/views/`; Vue 3 single-file components live under `resources/ts/islands/` and mount in the templates that need interactivity. No SPA shell, no client router, no global state library on the client.
+We adopt **Strav's island architecture**: pages are `.strav` server-rendered templates under `resources/views/`; Vue 3 single-file components live under `resources/islands/` and mount in the templates that need interactivity. No SPA shell, no client router, no global state library on the client.
 
 ---
 
@@ -74,8 +74,8 @@ The showcase exists to demonstrate Strav. A decoupled SPA would showcase Vite, n
 ## Verification hooks
 
 - [ ] Reader route's **main content** (title, body, byline, code blocks, marginalia) renders correctly with JavaScript disabled. Topbar (theme/density toggles) and footnote popovers may require hydration.
-- [ ] No client-side router code in `resources/ts/`.
-- [ ] Each island file under `resources/ts/islands/` is mounted from at least one `.strav` template.
+- [ ] No client-side router code in `resources/islands/`.
+- [ ] Each island file under `resources/islands/` is mounted from at least one `.strav` template.
 - [ ] No interactive surface (editor, palette, AI drawer, review) is mounted on read-only doc routes.
 
 ---

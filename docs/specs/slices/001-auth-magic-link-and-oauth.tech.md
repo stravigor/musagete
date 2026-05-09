@@ -100,7 +100,7 @@ references:
 
 ### Migration
 
-- **Forward:** `bun strav make:migration --from-schema 001_auth` then `bun strav db:migrate`.
+- **Forward:** `bun strav generate:migration -m "001_auth"` then `bun strav migrate`.
 - **Reverse:** forward-only; rollback drops the auth surface and is destructive — listed in the adapter's "AI must never run".
 - **Deploy safety:** all-new tables; no online-rewrites; no lock risk.
 

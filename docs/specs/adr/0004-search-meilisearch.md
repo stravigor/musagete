@@ -62,7 +62,7 @@ At 250+ docs the FTS5/Meilisearch divergence (analyzer differences, ranking, typ
 ## Consequences
 
 - **Positive:** Slice 005's tests run against the same backend production uses; no analyzer-difference test pack needed.
-- **Negative:** Quick-start docs include `docker compose up -d meili` before `bun strav db:migrate`. Anyone without Docker has a hard stop.
+- **Negative:** Quick-start docs include `docker compose up -d meili` before `bun strav migrate`. Anyone without Docker has a hard stop.
 - **Neutral / follow-ups:** Production deployments document `MEILI_MASTER_KEY` and a one-shot reindex command. If a future deploy needs a different driver, the swap remains a single config change — but the test suite would need to be re-run against the new driver before that deploy is supported.
 
 ---

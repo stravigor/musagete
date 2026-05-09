@@ -127,7 +127,7 @@ The capabilities v1 will deliver. Each cites at least one gain creator or pain r
                                    ▼
                           ┌──────────────────┐
                           │  Vue 3 islands   │  Reader (none), Editor,
-                          │  resources/ts/   │  ⌘K Palette, Review,
+                          │  resources/      │  ⌘K Palette, Review,
                           │  islands/        │  AskKBDrawer
                           └────────┬─────────┘
                                    │ HTTP / WebSocket
