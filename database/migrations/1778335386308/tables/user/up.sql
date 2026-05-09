@@ -1,0 +1,13 @@
+-- Create table: user
+CREATE TABLE IF NOT EXISTS "user" (
+  "id" BIGSERIAL,
+  "email" VARCHAR(254) NOT NULL DEFAULT '',
+  "name" VARCHAR(120),
+  "avatar_idx" INTEGER NOT NULL DEFAULT 0,
+  "last_seen_at" TIMESTAMPTZ,
+  "last_workspace_id" BIGINT,
+  "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updated_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "deleted_at" TIMESTAMPTZ,
+  CONSTRAINT "pk_user" PRIMARY KEY ("id")
+);

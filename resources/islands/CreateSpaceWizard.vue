@@ -169,6 +169,10 @@ async function submit() {
   error.value = null
 
   try {
+    // Default `redirect: 'follow'` so fetch traverses the controller's 302
+    // to the space read view; `res.url` is the final URL we navigate to.
+    // (`redirect: 'manual'` returns an opaqueredirect with status 0 and
+    // no headers — indistinguishable from a server error.)
     const res = await fetch(`/workspaces/${props.workspaceSlug}/spaces`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -181,12 +185,10 @@ async function submit() {
         allowComments: form.value.allowComments,
         aiIndex: form.value.aiIndex,
       }),
-      redirect: 'manual',
     })
 
-    if (res.status === 302) {
-      const dest = res.headers.get('location') ?? `/workspaces/${props.workspaceSlug}`
-      window.location.assign(dest)
+    if (res.ok) {
+      window.location.assign(res.url)
       return
     }
 

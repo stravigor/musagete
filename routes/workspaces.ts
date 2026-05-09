@@ -47,17 +47,14 @@ router.group(
 )
 
 // --- Workspace-scoped routes (tenant context bound) ------------------------
-router.group(
-  {
-    prefix: '/workspaces/:slug',
-    middleware: [currentUser, tenantContext, authorize(spacePolicy, 'canViewSpace')],
-  },
-  () => {
-    router.get('/', [WorkspaceController, 'show'])
-    router.get('/spaces/:space_slug', [SpaceController, 'show'])
-  },
-)
-
+//
+// IMPORTANT — route ordering: literal paths (`/spaces/new`) MUST register
+// before parametric paths that would otherwise capture them
+// (`/spaces/:space_slug`). Strav matches in registration order, so
+// /workspaces/acme/spaces/new would be caught by `:space_slug` (resolved
+// to "new") and yield 404 from SpaceController.show. Hence: canCreateSpace
+// group first (literal /spaces/new), then canViewSpace (parametric
+// /spaces/:space_slug + workspace landing), then canUpdateSpaceDefaults.
 router.group(
   {
     prefix: '/workspaces/:slug',
@@ -66,6 +63,21 @@ router.group(
   () => {
     router.get('/spaces/new', [SpaceController, 'newForm'])
     router.post('/spaces', [SpaceController, 'create'])
+  },
+)
+
+router.group(
+  {
+    prefix: '/workspaces/:slug',
+    middleware: [currentUser, tenantContext, authorize(spacePolicy, 'canViewSpace')],
+  },
+  () => {
+    // Empty path — matches `/workspaces/<slug>` without a trailing slash.
+    // (Strav's router treats `/` as requiring a trailing slash; controllers
+    // redirect to the no-slash form, so the empty-path version is the
+    // canonical landing.)
+    router.get('', [WorkspaceController, 'show'])
+    router.get('/spaces/:space_slug', [SpaceController, 'show'])
   },
 )
 

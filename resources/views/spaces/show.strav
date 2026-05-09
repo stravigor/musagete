@@ -10,16 +10,16 @@
     template: {{ space.template }} · visibility: {{ space.visibility }}
   </p>
 
-  @if (folders.length === 0)
+  @if(folders.length === 0)
     <p>
       No docs yet in this space. (The Blank template ships empty by design;
       pick another template to seed a starter tree.)
     </p>
   @else
-    @each folder in folders
+    @each(folder in folders)
       <h2>{{ folder.path }}</h2>
       <ul class="docs">
-        @each doc in folder.docs
+        @each(doc in folder.docs)
           <li>
             <strong>{{ doc.title }}</strong>
             <span class="doc-slug"><code>/{{ doc.slug }}</code></span>

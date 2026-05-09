@@ -55,15 +55,18 @@ async function submit() {
   submitting.value = true
   error.value = null
   try {
+    // `redirect: 'follow'` (the default) lets fetch follow the controller's
+    // 302 to the workspace landing. After the chain, `res.url` is the final
+    // URL — we navigate there. (`redirect: 'manual'` would return an
+    // opaqueredirect with status 0 and no headers, indistinguishable from
+    // a failure.)
     const res = await fetch('/workspaces', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: name.value, slug: slug.value }),
-      redirect: 'manual',
     })
-    if (res.status === 302) {
-      const dest = res.headers.get('location') ?? '/'
-      window.location.assign(dest)
+    if (res.ok) {
+      window.location.assign(res.url)
     } else if (res.status === 409) {
       error.value = 'That slug is taken. Pick another.'
     } else if (res.status === 400) {

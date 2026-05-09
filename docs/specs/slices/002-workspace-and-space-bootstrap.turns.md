@@ -1110,3 +1110,43 @@ postconditions:
 
 *(Build-T2 closes. The demonstrability gap from the Build-T1 + Integrate-T1 cycle is closed; slice 002's full surface is now browser-clickable end-to-end. Awaiting human ack and `decision: advance` to proceed with the C-track work — re-slice 003-007 as vertical-with-UI per the AGON-method-feedback note. That work amends Tech Specs + slice files for slices 003-007 to ensure each slice's first BDD scenario is a user-flow scenario, the slice's DoD includes a smoke-check line, and slice ordering is verified to keep the demonstrable surface growing without gaps.)*
 
+**Build-T2 — smoke-check follow-up (2026-05-09 — Liva)**
+
+Liva walked the full demo flow in a browser (`bun run dev` on port 3000). The walk surfaced four real bugs in the Build-T2 surface that the curl smoke-check missed; each was fixed in-Turn:
+
+1. **`fetch({ redirect: 'manual' })` returned status 0 + empty headers** — opaqueredirect responses don't expose status/Location, so the JS `if (res.status === 302)` branch never matched and the form showed "Server error (0)" even though the workspace was created. **Fix:** changed both `WorkspaceForm.vue` and `CreateSpaceWizard.vue` to default `redirect: 'follow'`; `res.ok` + `res.url` give the final destination after the chain. The 302 → tenant-context-protected GET → HTML round-trip is two requests instead of one, but it works in both browser and curl flows. Documented inline in each island.
+
+2. **Trailing-slash mismatch on the workspace landing route** — `router.group({ prefix: '/workspaces/:slug' }, () => router.get('/', ...))` produced a route that only matched `/workspaces/<slug>/` (with trailing slash); the controllers redirect to `/workspaces/<slug>` (no trailing slash) so the browser landed on a 404. **Fix:** changed the inner route from `'/'` to `''` so the empty path matches the no-slash form. Documented inline.
+
+3. **Parametric route captured the literal `/spaces/new`** — registration order had the canViewSpace group's `/spaces/:space_slug` registered before the canCreateSpace group's literal `/spaces/new`, so wizard requests routed to `SpaceController.show` looking for a space with slug `'new'` (404 `not_found`). **Fix:** reordered route groups so the literal-path group registers first; literal beats parametric in registration order. Documented inline with a comment explaining the ordering invariant.
+
+4. **`.strav` directive syntax: parens-style, no space** — I authored `@if (cond)` and `@each item in list` from Laravel/Blade muscle memory; Strav's tokenizer requires `@if(cond)` and `@each(item in list)` (matching the existing `@section('content')` / `@layout('layouts/app')` shape). **Fix:** updated `spaces/show.strav` and `workspaces/show.strav` (Liva fixed the latter directly). Saved as a feedback memory under the project memory store so future-me uses the right shape from the start.
+
+**Diagnostic detour worth recording:** mid-walk, the wizard rendered (auth worked) but the POST /spaces returned `401 Unauthorized` even though the cookie was visibly being sent. Root cause: between rendering the wizard and clicking Create, the user ran `bun strav fresh` (clearing the session table); the browser kept its old cookie, but the cookie hash no longer matched any session row. Verified by `SELECT cookie_hash` directly and computing `hashCookieValue(...)` on the cookie string — they didn't match. Resolution: clear the cookie + sign in fresh. Worth a follow-up: a "session-not-found" branch in `currentUser` could log a warning rather than silently treating it as unauthenticated; out of scope here.
+
+**Final smoke-check walked end-to-end:**
+
+```
+localhost:3000/                        →  /auth                                ✓
+/auth (sign in via magic link)        →  / via redeem                         ✓
+/                                      →  /workspaces/new (no last_workspace)  ✓
+/workspaces/new (create 'acme')       →  /workspaces/acme                     ✓
+/workspaces/acme                       →  workspace landing, "create first space" CTA ✓
+/workspaces/acme/spaces/new           →  4-step wizard                        ✓
+wizard step 4 → "Create space"        →  /workspaces/acme/spaces/<slug>       ✓
+/workspaces/acme/spaces/<slug>        →  folder tree + seeded docs            ✓
+```
+
+**Tests still pass:** 19 pass / 1 skip / 0 fail / 147 expect() calls.
+
+**outputs (Build-T2 follow-up)**
+
+```yaml
+- resources/islands/WorkspaceForm.vue                              edited       — fetch redirect: 'manual' → 'follow'; res.ok + res.url
+- resources/islands/CreateSpaceWizard.vue                          edited       — same fetch fix
+- routes/workspaces.ts                                             edited       — workspace landing path '/' → ''; route group reordering (canCreateSpace before canViewSpace) so literal `/spaces/new` beats parametric `/spaces/:space_slug`
+- resources/views/spaces/show.strav                                edited       — `.strav` directive syntax fix (parens-style, no space)
+- resources/views/workspaces/show.strav                            edited       — same syntax fix (Liva)
+- database/migrations/1778335386308/                               new          — fresh migration after `bun strav fresh` cleared dev DB during the walk; functionally identical to 1778330121360 (which was deleted by fresh)
+```
+

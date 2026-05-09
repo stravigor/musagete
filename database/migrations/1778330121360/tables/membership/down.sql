@@ -1,3 +1,0 @@
--- Reverse modify table: membership
-ALTER TABLE "membership" ALTER COLUMN "workspace_id" SET DEFAULT (current_setting('app.tenant_id'::text, true))::bigint;
-ALTER TABLE "membership" ALTER COLUMN "id" DROP DEFAULT;

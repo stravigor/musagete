@@ -1,0 +1,11 @@
+-- Create table: workspace
+CREATE TABLE IF NOT EXISTS "workspace" (
+  "id" BIGSERIAL,
+  "slug" VARCHAR(80) NOT NULL DEFAULT '',
+  "name" VARCHAR(80) NOT NULL DEFAULT '',
+  "owner_id" BIGINT NOT NULL,
+  "created_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updated_at" TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "deleted_at" TIMESTAMPTZ,
+  CONSTRAINT "pk_workspace" PRIMARY KEY ("id")
+);

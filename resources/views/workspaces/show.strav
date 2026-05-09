@@ -9,14 +9,14 @@
   </p>
 
   <h2>Spaces</h2>
-  @if (spaces.length === 0)
+  @if(spaces.length === 0)
     <p>
       No spaces yet. <a href="/workspaces/{{ workspace.slug }}/spaces/new">Create your first space</a>
       to seed a folder tree from one of six templates.
     </p>
   @else
     <ul class="spaces">
-      @each space in spaces
+      @each(space in spaces)
         <li>
           <a href="/workspaces/{{ workspace.slug }}/spaces/{{ space.slug }}">
             <strong>{{ space.name }}</strong>
