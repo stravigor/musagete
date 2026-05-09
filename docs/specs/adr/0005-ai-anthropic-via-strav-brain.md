@@ -1,9 +1,9 @@
 # ADR-0005 — AI: `@strav/brain` with Anthropic primary; `@strav/rag` over pgvector
 
-Status:       Proposed
+Status:       Accepted
 Relationship:
 Date:         2026-05-09
-Decided by:
+Decided by:   Liva
 
 ---
 
@@ -82,8 +82,8 @@ Grounding by tool restriction is a strong invariant; multi-provider at launch wo
 ## Signature
 
 ```
-Decided by:
-Date:
+Decided by: Liva
+Date: 2026-05-09
 ```
 
 ---

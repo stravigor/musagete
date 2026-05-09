@@ -1,9 +1,9 @@
 # ADR-0006 — Editor: TipTap headless wrapped as a Vue island; markdown serializer
 
-Status:       Proposed
+Status:       Accepted
 Relationship:
 Date:         2026-05-09
-Decided by:
+Decided by:   Liva
 
 ---
 
@@ -77,8 +77,8 @@ TipTap's headless API + a markdown serializer is the cleanest path to `R3` and `
 ## Signature
 
 ```
-Decided by:
-Date:
+Decided by: Liva
+Date: 2026-05-09
 ```
 
 ---

@@ -1,9 +1,9 @@
 # ADR-0007 — Versioning: immutable revisions with `docs.current_revision_id` pointer
 
-Status:       Proposed
+Status:       Accepted
 Relationship:
 Date:         2026-05-09
-Decided by:
+Decided by:   Liva
 
 ---
 
@@ -78,8 +78,8 @@ Immutability is a property the slice tests can assert; it's the foundation that 
 ## Signature
 
 ```
-Decided by:
-Date:
+Decided by: Liva
+Date: 2026-05-09
 ```
 
 ---
