@@ -3,6 +3,8 @@ import { currentUser } from '#middleware/current_user'
 import { tenantContext } from '#middleware/tenant_context'
 import workspacePolicy from '#policies/workspace_policy'
 import spacePolicy from '#policies/space_policy'
+import LandingController from '#controllers/landing_controller'
+import AuthViewController from '#controllers/auth_view_controller'
 import WorkspaceController from '#controllers/workspace_controller'
 import SpaceController from '#controllers/space_controller'
 import SpaceDefaultsController from '#controllers/space_defaults_controller'
@@ -12,21 +14,47 @@ import SpaceDefaultsController from '#controllers/space_defaults_controller'
  *
  * Mounted as a side-effect import from `start/routes.ts`.
  *
- * Layout:
- *   POST /workspaces                → workspace creation (any signed-in user)
- *   /workspaces/:slug/...           → tenant-scoped routes:
- *     POST   /spaces                → space creation (≥ editor)
+ * Layout (after Build-T2 hoist of UI):
+ *   GET  /                                           → landing redirect
+ *   GET  /auth                                       → sign-in view (public)
+ *   GET  /workspaces/new                             → workspace creation form
+ *   POST /workspaces                                 → workspace creation
+ *   /workspaces/:slug/...                            → tenant-scoped routes:
+ *     GET   /                                        → workspace landing
+ *     GET   /spaces/new                              → wizard
+ *     POST  /spaces                                  → space creation
+ *     GET   /spaces/:space_slug                      → space read view
+ *     PATCH /spaces/:space_slug/defaults             → defaults toggle
  *
- * The workspace-creation route does NOT use `tenantContext` — it creates
- * the tenant row itself. Every nested route under `/workspaces/:slug/...`
- * runs under the `tenantContext` middleware, which resolves the slug,
- * verifies membership, and binds the request body in `withTenant(...)`.
+ * The workspace-creation routes do NOT use `tenantContext` — they create
+ * the tenant row itself or precede tenant context. Every nested route under
+ * `/workspaces/:slug/...` runs under `tenantContext`.
  */
 
+// --- Public landing + auth -------------------------------------------------
+router.group({ middleware: [currentUser] }, () => {
+  router.get('/', [LandingController, 'index'])
+})
+router.get('/auth', [AuthViewController, 'signIn'])
+
+// --- Workspace creation (auth required, no tenant context yet) -------------
 router.group(
   { middleware: [currentUser, authorize(workspacePolicy, 'canCreateWorkspace')] },
   () => {
+    router.get('/workspaces/new', [WorkspaceController, 'newForm'])
     router.post('/workspaces', [WorkspaceController, 'create'])
+  },
+)
+
+// --- Workspace-scoped routes (tenant context bound) ------------------------
+router.group(
+  {
+    prefix: '/workspaces/:slug',
+    middleware: [currentUser, tenantContext, authorize(spacePolicy, 'canViewSpace')],
+  },
+  () => {
+    router.get('/', [WorkspaceController, 'show'])
+    router.get('/spaces/:space_slug', [SpaceController, 'show'])
   },
 )
 

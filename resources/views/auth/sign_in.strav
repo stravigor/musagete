@@ -1,0 +1,10 @@
+@layout('layouts/app')
+
+@section('content')
+  <h1>Sign in to Musagete</h1>
+  <p>
+    Enter your email and we'll send you a magic link. New here? You'll get an
+    account on first sign-in.
+  </p>
+  <vue:auth-form/>
+@end

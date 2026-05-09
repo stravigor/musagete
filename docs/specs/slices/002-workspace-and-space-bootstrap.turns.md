@@ -3,7 +3,7 @@
 ```
 slice_id:    002-workspace-and-space-bootstrap
 started:     2026-05-09
-last_turn:   Integrate-T1
+last_turn:   Build-T2
 ```
 
 *References:*
@@ -994,4 +994,119 @@ postconditions:
 - Integrate-T1 closed by: Liva — 2026-05-09
 
 *(Slice 002 shipped. Next-up per `20-backlog.md`: slice 003 — Reader (editorial layout). Slice 003 inherits two scope items from slice 001 (`resources/css/tokens.css` + auth `.strav` view + AuthForm island) per slice 001's deferral amendment; the wizard styling shipped in slice 002 with ad-hoc CSS will get themed when slice 003's tokens.css lands.)*
+
+---
+
+### `Build-T2` — close the demonstrability gap (UI hoist + read views + landing pages)
+
+```yaml
+id:             Build-T2
+phase:          Build
+intent:         Land the minimum browser-clickable UI for the slice 001 + slice 002 surface so a human can sign in and walk through workspace + space creation end-to-end. Surfaced retroactively after Integrate-T1 — slice 002 shipped with green BDD tests but undemonstrable in a browser (no auth UI to sign in with; no entry-point page to reach the wizard; no read view to verify the space exists). This Turn closes that gap, and a method-feedback note (`docs/notes/agon-vertical-slicing-enforcement.md`) captures the planning failure that produced it.
+owner:          ai
+inputs:
+  - ./002-workspace-and-space-bootstrap.md            (slice — status: shipped, owner_turn: Integrate-T1 → Build-T2)
+  - ./002-workspace-and-space-bootstrap.tech.md       (Tech Spec — Signed; 4 amendments)
+  - ./001-auth-magic-link-and-oauth.md                (slice — shipped; auth UI was deferred via Tech Spec amendment)
+  - ./001-auth-magic-link-and-oauth.tech.md           (Tech Spec — auth view + AuthForm island deferred to slice 003)
+  - ../adr/0003-styling-tokens-css-modules.md         (Accepted — but tokens.css is a slice 003 deliverable; this Turn ships ad-hoc CSS Modules per the slice-001-style precedent)
+  - ../00-discovery.md § Goals + Non-goals             (signed)
+  - ../adapters/strav.md § 1 (UI tail rows 12–15)      (accepted)
+  - ../../docs/notes/agon-vertical-slicing-enforcement.md (the method-feedback note framing this Turn's existence)
+
+preconditions:
+  - Slice 001 is shipped; slice 002 is shipped; both pass tests but neither is browser-clickable end-to-end.
+  - Slice 001's Tech Spec amendment "auth UI deferred to slice 003" must be rescinded (the deferral was the original sin per the method-feedback note); auth UI hoists into this Turn.
+  - tokens.css is still slice 003's deliverable; this Turn ships ad-hoc `<style module>` SFC styling in line with slice 002's wizard precedent.
+```
+
+**verification (pre-act)**
+
+```yaml
+ai_of_human:
+  (empty — scope is well-defined; the demonstrability gap is concrete and the fix is a list of new view + island + route files. The slice 001 amendment rescission is a routine Tech Spec amendment.)
+```
+
+**work — UI hoist for the demonstrable flow**
+
+The target flow that a human must be able to walk:
+
+```
+1. open localhost:3000               → GET /
+                                       → if authenticated + last_workspace_id: 302 to /workspaces/<slug>
+                                       → if authenticated + no workspace:      302 to /workspaces/new
+                                       → if unauthenticated:                   302 to /auth
+2. /auth                             → sign-in form (email → magic link)
+3. (in dev: MAIL_DRIVER=log prints the magic link)
+   click the link                    → GET /auth/magic/:token (slice 001 endpoint)
+                                       → 302 back to /
+4. /workspaces/new                   → workspace creation form
+                                       → POST /workspaces                       (slice 002 endpoint)
+                                       → 302 to /workspaces/<slug>
+5. /workspaces/<slug>                → workspace landing; link to "Create your first space"
+6. /workspaces/<slug>/spaces/new     → wizard (slice 002, already shipping)
+                                       → POST /workspaces/:slug/spaces          (slice 002 endpoint)
+                                       → 302 to /workspaces/<slug>/spaces/<space-slug>
+7. /workspaces/<slug>/spaces/<space-slug>  → space read view (folder tree + seed docs)
+```
+
+Steps 3 and 6's POST handlers ship already (slice 001, slice 002). Steps 1, 2, 4, 5, 7 need new GET routes + views + (where applicable) Vue islands. This Turn ships those, plus rescinds slice 001's auth-UI deferral via Tech Spec amendment.
+
+**work**
+
+1. **Auth UI hoisted into slice 002.** Slice 001's "auth view + tokens.css deferred to slice 003" Tech Spec amendment was the trigger for the demonstrability gap (per `docs/notes/agon-vertical-slicing-enforcement.md`). RESCINDED via amendment marker on the original entry: the auth view + `AuthForm` Vue island ship here with ad-hoc `<style module>` CSS (slice 002's wizard precedent). `tokens.css` remains slice 003's deliverable; slice 003 will theme the auth view + workspace forms + wizard when it lands. Slice 003's backlog row updated.
+
+2. **Five new GET routes + 4 new views/islands wired:**
+   - `GET /` → `LandingController.index` — auth-aware redirect: unauth → /auth, auth+last_workspace_id → /workspaces/<slug>, auth+owns workspace → /workspaces/<that-slug>, otherwise → /workspaces/new.
+   - `GET /auth` → `AuthViewController.signIn` — public; renders `auth/sign_in.strav` (mounts `AuthForm.vue` — POSTs to `/auth/magic`, displays "check your email" with a dev hint about MAIL_DRIVER=log).
+   - `GET /workspaces/new` → `WorkspaceController.newForm` — auth required; renders `workspaces/new.strav` (mounts `WorkspaceForm.vue` — POSTs to `/workspaces`, auto-derives slug from name, follows 302 to /workspaces/<slug>).
+   - `GET /workspaces/:slug` → `WorkspaceController.show` — under tenant_context + canViewSpace; renders `workspaces/show.strav` listing the workspace's spaces with links + "Create your first space" CTA.
+   - `GET /workspaces/:slug/spaces/:space_slug` → `SpaceController.show` — under tenant_context + canViewSpace; renders `spaces/show.strav` (folder tree grouped by `folder_path`, listing seeded docs).
+
+3. **Strav template directives learned:** `@if (cond)` / `@elseif` / `@else` / `@end`; `@each item in list` / `@end`. Initial draft used `@foreach` and `@endif`/`@endforeach` (Laravel-style); fixed to Strav syntax.
+
+4. **Smoke-check via `bun run dev` + curl on the running dev server:**
+   ```
+   GET /                : 302 → /auth   ✓ (unauth landing)
+   GET /auth            : 200            ✓ (sign-in view renders)
+   GET /workspaces/new  : 401            ✓ (auth required)
+   GET /workspaces/x    : 404            ✓ (unknown slug)
+   POST /workspaces     : 401            ✓ (auth required)
+   GET /unknown         : 404            ✓ (no route)
+   ```
+   Vue island bundle built clean: `Built 4 component(s) → islands.js (274.8kB)` — counter (existing) + CreateSpaceWizard (slice 002 Build-T1) + AuthForm + WorkspaceForm.
+
+5. **Project-local typecheck clean.** All 19 tests still pass / 1 skip / 0 fail / 147 expect() calls.
+
+**outputs (Build-T2)**
+
+```yaml
+- resources/views/auth/sign_in.strav                              new          — sign-in layout; mounts AuthForm
+- resources/islands/AuthForm.vue                                  new          — email → magic link form; "check your email" sent state with dev hint
+- resources/views/workspaces/new.strav                            new          — first-workspace creation layout; mounts WorkspaceForm
+- resources/islands/WorkspaceForm.vue                             new          — name + auto-derived slug; POSTs to /workspaces with redirect: 'manual'
+- resources/views/workspaces/show.strav                           new          — workspace landing; @if/@each over space list; "+ New space" CTA
+- resources/views/spaces/show.strav                               new          — space read view; folders grouped by folder_path with seeded docs
+- app/http/controllers/landing_controller.ts                      new          — GET / auth-aware redirect chain (last_workspace_id → owned → /new)
+- app/http/controllers/auth_view_controller.ts                    new          — GET /auth signIn
+- app/http/controllers/workspace_controller.ts                    edited       — added newForm() + show()
+- app/http/controllers/space_controller.ts                        edited       — added show() with folder grouping
+- routes/workspaces.ts                                            edited       — 5 new GET routes; 4 route groups now (public landing, auth, workspace creation, tenant-scoped reads, tenant-scoped writes, tenant-scoped admin)
+- docs/specs/slices/001-auth-magic-link-and-oauth.tech.md         amended      — auth-UI deferral RESCINDED; auth view + AuthForm hoisted to slice 002 Build-T2
+- docs/specs/20-backlog.md                                        edited       — slice 003 inheritance row updated: tokens.css only (auth view shipped in slice 002 Build-T2)
+```
+
+**postconditions — Build-T2**
+
+```yaml
+postconditions:
+  - [x] A human running `bun run dev` and opening localhost:3000 can sign in (magic link via dev console), create a workspace, create a space, and see the seeded folder tree — without leaving the browser.
+  - [x] No new BDD scenarios authored (the BDD shape is HTTP-level and unchanged); the smoke-check via curl + manual click-through covers the new GET routes.
+  - [x] Slice 001's "auth UI deferred to slice 003" Tech Spec amendment is RESCINDED with a marker; slice 003's inheritance row updated.
+  - [x] `bun test` exits 0 globally (19 pass / 1 skip / 0 fail).
+  - [x] `bun run typecheck` exits 0 for project-local sources.
+  - [x] No schema changes; no migration changes.
+```
+
+*(Build-T2 closes. The demonstrability gap from the Build-T1 + Integrate-T1 cycle is closed; slice 002's full surface is now browser-clickable end-to-end. Awaiting human ack and `decision: advance` to proceed with the C-track work — re-slice 003-007 as vertical-with-UI per the AGON-method-feedback note. That work amends Tech Specs + slice files for slices 003-007 to ensure each slice's first BDD scenario is a user-flow scenario, the slice's DoD includes a smoke-check line, and slice ordering is verified to keep the demonstrable surface growing without gaps.)*
 

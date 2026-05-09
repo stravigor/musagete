@@ -1,5 +1,6 @@
 import type { Context } from '@strav/http'
 import { validate, required, string } from '@strav/http'
+import { sql } from '@strav/database'
 import type { CurrentUser } from '#policies/auth_policy'
 import { createSpace } from '#services/spaces/space_service'
 import { SPACE_TEMPLATES } from '#services/spaces/space_templates'
@@ -45,6 +46,51 @@ export default class SpaceController {
       defaults: t.defaults,
     }))
     return ctx.view('spaces/new', { workspace, templates })
+  }
+
+  /**
+   * `GET /workspaces/:slug/spaces/:space_slug`
+   * Space read view — folder tree + seeded docs. Per Tech Spec § Interface
+   * contract; under `tenantContext` so RLS scopes the queries.
+   */
+  async show(ctx: Context) {
+    const workspace = ctx.get<{ id: number; slug: string; name: string }>('workspace')
+    const spaceSlug = ctx.params.space_slug
+
+    const spaces = (await sql`
+      SELECT "id", "slug", "name", "template", "visibility"
+      FROM "space"
+      WHERE "slug" = ${spaceSlug}
+      LIMIT 1
+    `) as Array<{
+      id: number
+      slug: string
+      name: string
+      template: string
+      visibility: string
+    }>
+    if (spaces.length === 0) return ctx.json({ error: 'not_found' }, 404)
+    const space = spaces[0]!
+
+    const docs = (await sql`
+      SELECT "slug", "title", "folder_path"
+      FROM "doc"
+      WHERE "space_id" = ${space.id}
+      ORDER BY "folder_path", "slug"
+    `) as Array<{ slug: string; title: string; folder_path: string }>
+
+    // Group by folder_path for the view.
+    const byFolder = new Map<string, Array<{ slug: string; title: string }>>()
+    for (const doc of docs) {
+      if (!byFolder.has(doc.folder_path)) byFolder.set(doc.folder_path, [])
+      byFolder.get(doc.folder_path)!.push({ slug: doc.slug, title: doc.title })
+    }
+    const folders = Array.from(byFolder.entries()).map(([path, docs]) => ({
+      path,
+      docs,
+    }))
+
+    return ctx.view('spaces/show', { workspace, space, folders })
   }
 
   /**
