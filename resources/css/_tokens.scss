@@ -1,0 +1,89 @@
+/**
+ * Design tokens — binding per ADR-0003 + design handoff §6 (verbatim).
+ *
+ * Source of truth: /Users/liva/Projects/Strav.dev/documents/musagete/
+ *                  design_handoff_musagete_kb/source/styles.css (lines 7–82).
+ *
+ * Wrapped in `@layer tokens` so component CSS can override safely
+ * (handoff §6 "All from styles.css. Copy verbatim into your token system.").
+ */
+
+@layer tokens {
+  /* ─── Light mode (default) ────────────────────────────────────── */
+  :root {
+    /* paper / ink */
+    --paper: #FAF7F2;
+    --paper-2: #F2EDE3;
+    --paper-3: #E8E1D2;
+    --surface: #FFFFFF;
+    --ink: #1A1614;
+    --ink-2: #4A4540;
+    --ink-3: #8A8278;
+    --ink-4: #B8B0A4;
+    --rule: rgba(26, 22, 20, 0.08);
+    --rule-2: rgba(26, 22, 20, 0.14);
+    --rule-3: rgba(26, 22, 20, 0.22);
+
+    /* accent — terracotta default; user-overridable via inline style on <html> */
+    --accent: #B8442C;
+    --accent-2: #9A3622;
+    --accent-soft: rgba(184, 68, 44, 0.10);
+    --accent-soft-2: rgba(184, 68, 44, 0.18);
+    --accent-ink: #FFFFFF;
+
+    /* semantic */
+    --ok: #4A7A3D;
+    --warn: #B58A2E;
+    --danger: #B83A2E;
+    --add: #2D6A3F;
+    --add-soft: rgba(45, 106, 63, 0.10);
+    --del: #B83A2E;
+    --del-soft: rgba(184, 58, 46, 0.10);
+
+    /* type families */
+    --serif: 'Newsreader', 'Iowan Old Style', Charter, Georgia, serif;
+    --sans:  'DM Sans', ui-sans-serif, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    --mono:  'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+    /* density */
+    --row-h: 30px;
+    --pad: 28px;
+    --gap: 18px;
+    --read-lh: 1.65;
+
+    /* layout */
+    --sidebar-w: 264px;
+    --rail-w: 320px;
+    --topbar-h: 52px;
+    --maxread: 720px;
+    --radius: 6px;
+    --radius-lg: 10px;
+  }
+
+  /* ─── Dark mode ───────────────────────────────────────────────── */
+  :root[data-theme="dark"] {
+    --paper: #14110E;
+    --paper-2: #1C1916;
+    --paper-3: #25211C;
+    --surface: #1A1714;
+    --ink: #F2EBE0;
+    --ink-2: #C8C0B2;
+    --ink-3: #8A8278;
+    --ink-4: #5A554D;
+    --rule: rgba(242, 235, 224, 0.08);
+    --rule-2: rgba(242, 235, 224, 0.14);
+    --rule-3: rgba(242, 235, 224, 0.22);
+    --accent-soft: rgba(217, 99, 75, 0.16);
+    --accent-soft-2: rgba(217, 99, 75, 0.28);
+    --add-soft: rgba(72, 156, 90, 0.16);
+    --del-soft: rgba(225, 95, 80, 0.16);
+  }
+
+  /* ─── Density: compact ────────────────────────────────────────── */
+  :root[data-density="compact"] {
+    --row-h: 26px;
+    --pad: 20px;
+    --gap: 12px;
+    --read-lh: 1.55;
+  }
+}

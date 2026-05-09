@@ -1,0 +1,123 @@
+/**
+ * Editorial reading typography + sans-display variant.
+ *
+ * Source of truth: design handoff `source/styles.css` lines 142–252 (verbatim).
+ * Loaded by every read-path template via app.scss.
+ */
+
+.read {
+  font-family: var(--serif);
+  font-size: 19px;
+  line-height: var(--read-lh);
+  color: var(--ink);
+  font-feature-settings: 'kern', 'liga', 'onum';
+}
+
+.read p { margin: 0 0 1em 0; }
+.read p + p { text-indent: 0; }
+
+.read h1 {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: clamp(36px, 4vw, 52px);
+  line-height: 1.05;
+  letter-spacing: -0.018em;
+  margin: 0 0 0.4em 0;
+  font-variation-settings: 'opsz' 48;
+}
+
+.read h2 {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 28px;
+  line-height: 1.2;
+  letter-spacing: -0.012em;
+  margin: 1.6em 0 0.5em 0;
+  font-variation-settings: 'opsz' 32;
+}
+
+.read h3 {
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  margin: 2em 0 0.6em 0;
+}
+
+.read em,
+.read i { font-style: italic; }
+
+.read strong,
+.read b { font-weight: 600; color: var(--ink); }
+
+.read a {
+  color: var(--ink);
+  background-image: linear-gradient(transparent calc(100% - 1px), var(--accent) calc(100% - 1px));
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  padding-bottom: 1px;
+}
+.read a:hover { color: var(--accent); }
+
+.read ul,
+.read ol { margin: 0 0 1em 0; padding-left: 1.4em; }
+.read li { margin-bottom: 0.4em; }
+.read li::marker { color: var(--ink-3); }
+
+.read blockquote {
+  margin: 1em 0;
+  padding: 0 0 0 20px;
+  border-left: 2px solid var(--accent);
+  font-style: italic;
+  color: var(--ink-2);
+}
+
+.read code {
+  font-family: var(--mono);
+  font-size: 0.86em;
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+  padding: 1px 5px;
+  border-radius: 4px;
+  letter-spacing: -0.01em;
+}
+
+.read kbd {
+  font-family: var(--mono);
+  font-size: 0.78em;
+  background: var(--surface);
+  border: 1px solid var(--rule-2);
+  border-bottom-width: 2px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  color: var(--ink-2);
+}
+
+/* Drop cap for first paragraph after h1 — the `.lede` class is applied
+   by the markdown pipeline (markdown-it custom rule). */
+.read .lede::first-letter {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-variation-settings: 'opsz' 72;
+  font-size: 4.4em;
+  line-height: 0.86;
+  float: left;
+  padding: 0.08em 0.08em 0 0;
+  margin-top: 0.06em;
+  color: var(--accent);
+}
+
+/* Sans display variant — toggled by [data-display="sans"] on <html>. */
+:root[data-display="sans"] .read h1,
+:root[data-display="sans"] .read h2 {
+  font-family: var(--sans);
+  font-weight: 600;
+  letter-spacing: -0.022em;
+}
+:root[data-display="sans"] .read h1 { font-weight: 700; }
+:root[data-display="sans"] .read .lede::first-letter {
+  font-family: var(--sans);
+  font-weight: 700;
+}

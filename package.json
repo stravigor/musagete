@@ -23,20 +23,28 @@
     "#start/*": "./start/*.ts"
   },
   "dependencies": {
-    "@strav/kernel": "link:@strav/kernel",
-    "@strav/http": "link:@strav/http",
-    "@strav/view": "link:@strav/view",
-    "@strav/database": "link:@strav/database",
-    "@strav/cli": "link:@strav/cli",
+    "@mermaid-js/mermaid-cli": "^11.14.0",
     "@strav/auth": "link:@strav/auth",
-    "@strav/social": "link:@strav/social",
+    "@strav/cli": "link:@strav/cli",
+    "@strav/database": "link:@strav/database",
+    "@strav/http": "link:@strav/http",
+    "@strav/kernel": "link:@strav/kernel",
     "@strav/signal": "link:@strav/signal",
-    "vue": "^3.5.28",
-    "reflect-metadata": "^0.2.2"
+    "@strav/social": "link:@strav/social",
+    "@strav/view": "link:@strav/view",
+    "markdown-it": "^14.1.1",
+    "markdown-it-anchor": "^9.2.0",
+    "markdown-it-attrs": "^4.3.1",
+    "markdown-it-footnote": "^4.0.0",
+    "markdown-it-task-lists": "^2.1.1",
+    "reflect-metadata": "^0.2.2",
+    "shiki": "^4.0.2",
+    "vue": "^3.5.28"
   },
   "devDependencies": {
-    "@types/bun": "latest",
     "@strav/testing": "link:@strav/testing",
+    "@types/bun": "latest",
+    "@types/markdown-it": "^14.1.2",
     "typescript": "^5.9.3"
   }
 }
