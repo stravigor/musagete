@@ -1,6 +1,6 @@
 ```yaml
 slice_id:        001
-status:          built
+status:          shipped
 owner_turn:      Build-T1
 resource_type:   Entity
 tenancy:         platform
@@ -124,12 +124,13 @@ Scenario 9: Sign-out destroys the session
 
 - `Build-T0` — ai — *bootstrap deps, providers, config, dirs* — `advance` — 2026-05-09 — [full](./001-auth-magic-link-and-oauth.turns.md#build-t0)
 - `Build-T1` — ai — *implement signed slice 001 auth surface end-to-end* — `advance` (9/9 scenarios green) — 2026-05-09 — [full](./001-auth-magic-link-and-oauth.turns.md#build-t1)
+- `Integrate-T1` — shared — *commit + push + log entry + status flip* — `advance` — 2026-05-09 — [full](./001-auth-magic-link-and-oauth.turns.md#integrate-t1)
 
 ---
 
 ## Built / Shipped status
 
 - **Built** (Build Turn closed with `decision: advance`): 2026-05-09 in Build-T1 (after Build-T0 setup precursor).
-- **Shipped** (Integrate Turn closed): *not yet — Integrate Turn pending.*
-- **Merged commit(s):** *(filled at Integrate)*
-- **Log entry:** *(filled at Integrate; will appear in `spec/30-log.md`)*
+- **Shipped** (Integrate Turn closed): 2026-05-09 in Integrate-T1.
+- **Merged commit(s):** [`1bf1915`](https://github.com/stravigor/musagete/commit/1bf1915) — *Build slice 001: auth surface (magic link + Google/GitHub OAuth + TOTP)*
+- **Log entry:** [`spec/30-log.md` § Slice 001](../30-log.md#slice-001--auth-magic-link--googlegithub-oauth--totp)

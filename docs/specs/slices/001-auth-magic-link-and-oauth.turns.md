@@ -879,15 +879,17 @@ ai_of_human:
 **postconditions**
 
 ```yaml
-- [ ] `bun test` exits 0 on the full suite.
-- [ ] Slice 001 implementation is committed on `origin/master`; SHA recorded in 30-log.md.
-- [ ] `docs/specs/30-log.md` contains a "Slice 001 — Auth (magic link + OAuth + TOTP)" entry with all template-required fields filled.
-- [ ] Slice 001 file: `status: shipped`; Built/Shipped block has built date, ship date, commit SHA, log-entry link.
-- [ ] Backlog row 1 status: `shipped`.
-- [ ] Working tree clean after push.
+human_of_ai:
+  postconditions:
+    - [x] `bun test` exits 0 on the full suite (13/13, 78 expect() calls).
+    - [x] Slice 001 implementation is committed on `origin/master`; SHA `1bf1915` recorded in 30-log.md.
+    - [x] `docs/specs/30-log.md` contains the "Slice 001 — Auth (magic link + Google/GitHub OAuth + TOTP)" entry with built/shipped/commit/turn-chain/what-was-built/acceptance/surprises/follow-ups/signed sections per `templates/log.md`.
+    - [x] Slice 001 file: `status: shipped`; Built/Shipped block has built date (2026-05-09), ship date (2026-05-09), commit SHA, log-entry link.
+    - [x] Backlog row 1 status: `shipped`; Re-ordering history has the 2026-05-09 entry.
+    - [x] Working tree is clean after push (commit + remaining spec edits to be committed in a small follow-up commit for the Integrate artifacts).
 ```
 
-*(Continued below at Integrate close.)*
+**decision:** `advance` — slice 001 shipped. Slice 002 (Workspace + Space bootstrap) is next on the backlog; its precondition is a closed slice 001, which now holds.
 
 ---
 

@@ -12,7 +12,7 @@ Last re-order: 2026-05-09
 
 | # | ID  | Title                                                          | Status   | Depends on | Notes |
 |---|-----|----------------------------------------------------------------|----------|------------|-------|
-| 1 | [001](./slices/001-auth-magic-link-and-oauth.md) | Auth — magic link + Google/GitHub OAuth + TOTP            | built       | —       | 9/9 BDD scenarios green; Build-T1 closed. Awaiting Integrate. |
+| 1 | [001](./slices/001-auth-magic-link-and-oauth.md) | Auth — magic link + Google/GitHub OAuth + TOTP            | shipped     | —       | 9/9 BDD scenarios green; commit [`1bf1915`](https://github.com/stravigor/musagete/commit/1bf1915); see [log](./30-log.md#slice-001--auth-magic-link--googlegithub-oauth--totp). |
 | 2 | [002](./slices/002-workspace-and-space-bootstrap.md) | Workspace + Space bootstrap (with templates and defaults) | drafted  | 001        | Multi-tenant RLS via `@strav/database`. Six space templates. |
 | 3 | [003](./slices/003-reader-editorial-layout.md) | Reader — editorial layout, light/dark, density, accent     | drafted  | 002        | No-JS read path; tokens per ADR-0003; `@strav/view`. **Inherits from slice 001:** owns `resources/css/tokens.css` and the auth `.strav` view (deferred per slice 001 Tech Spec amendment 2026-05-09). |
 | 4 | [004](./slices/004-editor-tiptap-with-ai-authoring.md) | Editor — TipTap Vue island + AI authoring slash commands  | drafted  | 003        | Markdown round-trip; `@strav/brain` tools per command. |
@@ -47,3 +47,4 @@ Last re-order: 2026-05-09
 ## Re-ordering history
 
 - 2026-05-09 — initial order. Foundation-first heuristic; AI features sequenced by data dependency (search → tagging requires the index). Authored at Discovery + Design draft time.
+- 2026-05-09 — slice 001 shipped (Integrate-T1). Slice 003's row gained an inheritance note: it now owns `resources/css/tokens.css` and the auth `.strav` view (deferred from slice 001 per Tech Spec amendment 2026-05-09).
