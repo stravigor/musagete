@@ -1,9 +1,9 @@
 # ADR-0001 — Architecture: Strav islands over decoupled SPA
 
-Status:       Proposed
+Status:       Accepted
 Relationship:
 Date:         2026-05-09
-Decided by:
+Decided by:   Liva
 
 ---
 
@@ -35,9 +35,10 @@ We adopt **Strav's island architecture**: pages are `.strav` server-rendered tem
 - Authentication and authorization stay server-authoritative; no token-juggling in the browser.
 
 **What we give up:**
-- We cannot write the entire app as a single Vue tree; islands are isolated and must communicate through HTTP and `@strav/signal` channels.
-- Some patterns familiar from SPAs (client-side route transitions, global Pinia stores) don't apply; teams transferring from SPA work need to relearn island boundaries.
-- Sharing state between islands on the same page requires explicit wiring (props, custom events on `window`, or signal channels).
+- No client-side route transitions across full page navigations — each navigation is a server round-trip. (For heavily interactive subtrees we can opt into `@strav/view`'s SPA router, but the default page model is server-rendered.)
+- Store state is page-scoped: Pinia / reactive modules survive only until the next full navigation. Cross-page persistence is server-driven (session, DB, hydration via `data-props`).
+- Cross-tab or server-pushed state requires `@strav/signal` broadcasting — orthogonal to in-page state and not free for the price of a SPA.
+- Teams transferring from SPA work need to relearn the boundary: the *server* renders pages and owns navigation; the *client* owns interactivity within a page.
 
 **Why the exchange is worth it:**
 The showcase exists to demonstrate Strav. A decoupled SPA would showcase Vite, not Strav. The cost is paid once (mental model shift); the benefit compounds across every slice that exercises a Strav package.
@@ -83,8 +84,8 @@ The showcase exists to demonstrate Strav. A decoupled SPA would showcase Vite, n
 ## Signature
 
 ```
-Decided by:
-Date:
+Decided by: Liva
+Date: 2026-05-09
 ```
 
 ---
