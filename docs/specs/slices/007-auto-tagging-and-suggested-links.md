@@ -75,3 +75,4 @@ Scenario 5: Author dismisses a suggestion
 - [ ] `tagger` agent declares tool allowlist `[propose_tags]` (no free-form text).
 - [ ] Suggestions UI appears in the doc byline (non-intrusive).
 - [ ] BDD scenarios all green.
+- [ ] **Smoke-check (browser):** a human runs `bun run dev` (with `bun strav queue:work` running in a second terminal so the embed_revision job actually fires), signs in, saves a doc, waits ≤ 30 seconds, reopens the doc, and confirms the byline area shows tag suggestions + suggested links from the workspace's other docs. Applies one suggestion and confirms a `doc_tag` row appears; dismisses another and confirms it disappears from the suggestion list. Recorded under "Smoke-check" in this slice's Integrate-T1 entry per AGON.

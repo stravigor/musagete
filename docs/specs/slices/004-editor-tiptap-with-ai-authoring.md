@@ -75,3 +75,4 @@ Scenario 5: Save fails on cross-tenant doc id
 - [ ] Each authoring controller invokes a `@strav/brain` agent with an explicit tool allowlist.
 - [ ] `ai_call` row written for each invocation.
 - [ ] BDD scenarios green; round-trip property test green.
+- [ ] **Smoke-check (browser):** a human runs `bun run dev`, signs in, opens a doc's edit URL, types a paragraph, clicks Save, and confirms the doc updates in the read view. Then invokes `/rewrite` on a selection and confirms the streamed rewrite replaces the selection in-editor. Recorded under "Smoke-check" in this slice's Integrate-T1 entry per AGON.

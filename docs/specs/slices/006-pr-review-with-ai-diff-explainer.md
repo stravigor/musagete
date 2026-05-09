@@ -74,3 +74,4 @@ Scenario 5: Adding a thread comment fires a signal to subscribers
 - [ ] Suggested reviewers computed from doc maintainership + embedding similarity to the diff.
 - [ ] `@strav/signal` channel `change:<change_id>:threads` carries new-message events.
 - [ ] BDD scenarios all green.
+- [ ] **Smoke-check (browser):** a human runs `bun run dev`, signs in, edits a doc to create a draft revision, clicks "Propose change," and confirms the review page renders the side-by-side diff + AI summary panel + Suggested reviewers rail. Adds a thread comment from a second browser tab and confirms the first tab receives the new message via `@strav/signal` without polling. Merges the change and confirms the read view updates. Recorded under "Smoke-check" in this slice's Integrate-T1 entry per AGON.

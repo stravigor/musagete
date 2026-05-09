@@ -73,3 +73,4 @@ Scenario 4: Ungrounded queries refuse cleanly
 - [ ] Ask-the-KB agent's tool allowlist is exactly `[retrieve, cite_and_answer]`.
 - [ ] CmdKPalette and AskKBDrawer islands mount in the app shell template.
 - [ ] BDD scenarios green; latency assertion runs in CI on a 250-doc fixture.
+- [ ] **Smoke-check (browser):** a human runs `bun run dev`, signs in, presses ⌘K, queries a known-indexed term, and confirms hits ranked by relevance. Then opens the Ask-the-KB drawer, asks a grounded question, and confirms the answer cites paragraph IDs that resolve to real revision paragraphs. Asks an off-topic question and confirms the "no answer found in this workspace" UI surfaces. Recorded under "Smoke-check" in this slice's Integrate-T1 entry per AGON.

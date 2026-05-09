@@ -75,3 +75,4 @@ Scenario 5: Marginalia anchors highlight
 - [ ] Mermaid is rendered server-side at template time (or pre-rendered at save time and cached on `revision`).
 - [ ] Theme, density, and accent preferences are read from cookies set by the optional Topbar island.
 - [ ] BDD scenarios all green, including the JS-disabled scenario asserted with a no-JS HTML fixture test.
+- [ ] **Smoke-check (browser):** a human runs `bun run dev`, signs in, navigates to a published doc URL (`/workspaces/<slug>/spaces/<space-slug>/d/<doc-slug>` or whatever the final URL shape is), and confirms the editorial typography renders with the right theme/density/accent. Slice 003 also retroactively themes the slice-002 surfaces (auth view, workspace forms, wizard) — confirm those switch from ad-hoc CSS to token-driven styles. Recorded under "Smoke-check" in this slice's Integrate-T1 entry per AGON.
