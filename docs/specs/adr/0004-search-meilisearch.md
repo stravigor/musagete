@@ -1,9 +1,9 @@
 # ADR-0004 — Search: Meilisearch via `@strav/search` (dev + prod)
 
-Status:       Proposed
+Status:       Accepted
 Relationship:
 Date:         2026-05-09
-Decided by:
+Decided by:   Liva
 
 ---
 
@@ -79,8 +79,8 @@ At 250+ docs the FTS5/Meilisearch divergence (analyzer differences, ranking, typ
 ## Signature
 
 ```
-Decided by:
-Date:
+Decided by: Liva
+Date: 2026-05-09
 ```
 
 ---
