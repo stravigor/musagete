@@ -1,9 +1,9 @@
 # ADR-0002 — Auth: Strav-native only (magic link + OAuth + TOTP)
 
-Status:       Proposed
+Status:       Accepted
 Relationship:
 Date:         2026-05-09
-Decided by:
+Decided by:   Liva
 
 ---
 
@@ -76,8 +76,8 @@ Strav doesn't ship SAML/SCIM today. Implementing them outside the framework woul
 ## Signature
 
 ```
-Decided by:
-Date:
+Decided by: Liva
+Date: 2026-05-09
 ```
 
 ---
