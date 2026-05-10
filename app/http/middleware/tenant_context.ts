@@ -66,6 +66,9 @@ export const tenantContext: Middleware = async (ctx: Context, next) => {
     // actor, so the role must live on the user object, not on a sibling
     // ctx key.
     ctx.set('user', { ...user, membershipRole: memRows[0]!.role })
+    // Sibling key for views that read it directly (the sidebar partial,
+    // the workspace landing's role-pill).
+    ctx.set('membershipRole', memRows[0]!.role)
 
     return next()
   })

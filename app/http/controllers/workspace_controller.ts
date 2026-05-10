@@ -44,7 +44,14 @@ export default class WorkspaceController {
       ORDER BY "id" ASC
     `) as Array<{ slug: string; name: string; template: string; visibility: string }>
 
-    return ctx.view('workspaces/show', { user, workspace, membershipRole, spaces })
+    // The sidebar partial reads `sidebarSpaces`; reuse the same SELECT.
+    return ctx.view('workspaces/show', {
+      user,
+      workspace,
+      membershipRole,
+      spaces,
+      sidebarSpaces: spaces,
+    })
   }
 
   /**

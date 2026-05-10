@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html
+  lang="en"
+  data-theme="{{ theme ?? 'light' }}"
+  data-density="{{ density ?? 'regular' }}"
+  data-display="{{ display ?? 'serif' }}"
+  style="--accent: {{ accent ?? '#B8442C' }};"
+>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title ?? 'Musagete' }}</title>
+
+  {{-- Font + CSS loading mirrors layouts/app.strav's head. Kept inline in
+       this standalone layout because Strav's @section blocks compile to
+       sync IIFEs, so @include can't fire inside @section('content') —
+       moving the head + body chrome to top-level (not inside @section)
+       lets @include('partials/sidebar') and ('partials/topbar') work. --}}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;0,6..72,800;1,6..72,400;1,6..72,500;1,6..72,600&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  >
+
+  <link rel="stylesheet" href="{{ asset('/css/app.css') }}">
+</head>
+<body>
+  <div class="app">
+    @include('partials/sidebar')
+    <main class="app-main">
+      @include('partials/topbar')
+      <div class="app-content">
+        @show('shell-content')
+      </div>
+    </main>
+  </div>
+  @islands
+</body>
+</html>

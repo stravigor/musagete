@@ -8,6 +8,7 @@ import AuthViewController from '#controllers/auth_view_controller'
 import WorkspaceController from '#controllers/workspace_controller'
 import SpaceController from '#controllers/space_controller'
 import SpaceDefaultsController from '#controllers/space_defaults_controller'
+import DocController from '#controllers/doc_controller'
 
 /**
  * Slice 002 — workspace + space route registrations.
@@ -78,6 +79,7 @@ router.group(
     // canonical landing.)
     router.get('', [WorkspaceController, 'show'])
     router.get('/spaces/:space_slug', [SpaceController, 'show'])
+    router.get('/spaces/:space_slug/d/:doc_slug', [DocController, 'show'])
   },
 )
 

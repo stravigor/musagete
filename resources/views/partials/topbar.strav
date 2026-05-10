@@ -1,0 +1,16 @@
+{{-- Slice 003 topbar partial — breadcrumbs only.
+     View tabs (Read/Edit/History/Review), Find (⌘K), Ask, Share — deferred
+     to slices 004 / 005 / 006 as their respective surfaces ship. --}}
+<header class="topbar">
+  <nav class="breadcrumbs" aria-label="Breadcrumb">
+    <a href="/workspaces/{{ workspace.slug }}">{{ workspace.name }}</a>
+    @if(typeof space !== 'undefined' && space)
+      <span class="bc-sep">/</span>
+      <a href="/workspaces/{{ workspace.slug }}/spaces/{{ space.slug }}">{{ space.name }}</a>
+    @end
+    @if(typeof doc !== 'undefined' && doc)
+      <span class="bc-sep">/</span>
+      <span class="bc-current">{{ doc.title }}</span>
+    @end
+  </nav>
+</header>

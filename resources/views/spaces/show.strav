@@ -1,31 +1,29 @@
-@layout('layouts/app')
+@layout('layouts/shell')
 
-@section('content')
-  <p class="breadcrumb">
-    <a href="/workspaces/{{ workspace.slug }}">{{ workspace.name }}</a>
-    /
-  </p>
-  <h1>{{ space.name }}</h1>
-  <p class="meta">
-    template: {{ space.template }} · visibility: {{ space.visibility }}
-  </p>
+@section('shell-content')
+  <div class="page-container">
+    <p class="page-eyebrow">{{ space.template }} · {{ space.visibility }}</p>
+    <h1 class="page-title">{{ space.name }}</h1>
 
-  @if(folders.length === 0)
-    <p>
-      No docs yet in this space. (The Blank template ships empty by design;
-      pick another template to seed a starter tree.)
-    </p>
-  @else
-    @each(folder in folders)
-      <h2>{{ folder.path }}</h2>
-      <ul class="docs">
-        @each(doc in folder.docs)
-          <li>
-            <strong>{{ doc.title }}</strong>
-            <span class="doc-slug"><code>/{{ doc.slug }}</code></span>
-          </li>
-        @end
-      </ul>
+    @if(folders.length === 0)
+      <p>
+        No docs yet in this space. (The Blank template ships empty by design;
+        pick another template to seed a starter tree.)
+      </p>
+    @else
+      @each(folder in folders)
+        <h2 class="page-section">{{ folder.path }}</h2>
+        <ul class="page-list">
+          @each(doc in folder.docs)
+            <li>
+              <a class="list-row" href="/workspaces/{{ workspace.slug }}/spaces/{{ space.slug }}/d/{{ doc.slug }}">
+                <span class="list-row-title">{{ doc.title }}</span>
+                <span class="list-row-meta">/{{ doc.slug }}</span>
+              </a>
+            </li>
+          @end
+        </ul>
+      @end
     @end
-  @end
+  </div>
 @end

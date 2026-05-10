@@ -49,25 +49,102 @@ export const SPACE_TEMPLATES: Record<string, SpaceTemplate> = {
         slug: 'welcome-runbook',
         title: 'Welcome to Runbooks',
         folderPath: '/Runbooks',
-        body: 'Add your first runbook here.',
+        body: `# Welcome to Runbooks
+
+This space is your team's runbook home. Each entry should describe a single,
+specific operational scenario — what triggers it, who owns it, and the exact
+sequence of steps to bring the system back to a known-good state.
+
+> :memo: **Runbooks are written for the on-call engineer at 3am.** Assume tired,
+> assume context-free, assume scared. Short steps, code-block-quoted commands,
+> inline links to dashboards. {.callout}
+
+## What belongs here
+
+- **Service-specific runbooks.** One runbook per service per failure mode.
+- **Pipeline triage steps.** What to do when a deploy stages but doesn't promote.
+- **Database recovery.** Backups, point-in-time restore, replica failover.
+
+## A starter command
+
+\`\`\`bash
+# Roll back the most recent release
+acme rollback --release latest --reason "p99 spike"
+\`\`\`
+
+Replace this doc with your first runbook when you're ready.
+`,
       },
       {
         slug: 'how-we-use-adrs',
         title: 'How we use ADRs',
         folderPath: '/ADRs',
-        body: 'Add your first ADR here.',
+        body: `# How we use ADRs
+
+An **Architectural Decision Record** captures one decision worth more than a
+day to reverse. Every ADR has a Status, a Context, a Decision, and the
+Consequences (what we accept by choosing it).
+
+## Format
+
+\`\`\`markdown
+# ADR-NNNN — short imperative title
+
+Status: proposed | accepted | superseded
+Date: YYYY-MM-DD
+Decided by: <name>
+
+## Context
+## Decision
+## Tradeoffs
+## Consequences
+\`\`\`
+
+ADRs are append-only. When a decision is reversed, supersede it with a new
+ADR rather than editing the old one — the historical record is the value.
+`,
       },
       {
         slug: 'on-call-handbook',
         title: 'On-call Handbook',
         folderPath: '/On-call',
-        body: 'Add your on-call playbook here.',
+        body: `# On-call Handbook
+
+If you've been paged, start here.
+
+## First five minutes
+
+1. **Acknowledge the page** — silence the alert in the on-call tool.
+2. **Open \`#deploys\`** — the orchestrator posts a threaded message per
+   release; transient failures often annotate themselves before a human sees
+   them.
+3. **Don't \`git revert\`** — use \`acme rollback\` so the migration ratchet
+   stays consistent.
+
+## Escalation paths
+
+Replace this with your team's actual escalation matrix.
+`,
       },
       {
         slug: 'api-reference-overview',
         title: 'API Reference',
         folderPath: '/API Reference',
-        body: 'Add your API reference here.',
+        body: `# API Reference
+
+This space is where your API lives. Two ways to populate it:
+
+- **Hand-written.** One doc per endpoint, with request/response shapes,
+  auth requirements, and rate limits.
+- **OpenAPI ingestion.** Drop your \`openapi.yaml\` and the docs materialize
+  from the spec (Public API Docs template).
+
+## Conventions
+
+- Endpoints documented as \`POST /v1/<resource>\` headers.
+- Code samples in \`shell\` (curl) and \`typescript\` (SDK).
+- Error envelopes documented inline with each endpoint.
+`,
       },
     ],
   },

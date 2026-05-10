@@ -1,13 +1,15 @@
-@layout('layouts/app')
+@layout('layouts/shell')
 
-@section('content')
-  <h1>Create a space in {{ workspace.name }}</h1>
-  <p>
-    Pick a template, name it, and pick the per-space defaults. The template's
-    folders + starter docs are seeded for you when you finish step 4.
-  </p>
-  <vue:create-space-wizard
-    :workspace-slug="{{ workspace.slug }}"
-    :templates="{{ templates }}"
-  />
+@section('shell-content')
+  <div class="page-container">
+    <h1 class="page-title">Create a space in {{ workspace.name }}</h1>
+    <p class="page-deck">
+      Pick a template, name it, and pick the per-space defaults. The template's
+      folders + starter docs are seeded for you when you finish step 4.
+    </p>
+    <vue:create-space-wizard
+      :workspace-slug="{{ workspace.slug }}"
+      :templates="{{ templates }}"
+    />
+  </div>
 @end

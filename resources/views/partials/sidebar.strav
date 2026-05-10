@@ -1,0 +1,39 @@
+{{-- Slice 003 sidebar partial — minimal scope per Tech Spec § App shell.
+     Workspace switcher (static card, no dropdown), Spaces tree (space-level
+     only), user footer. ⌘K stub, cross-doc nav, Pinned, folder tree are
+     deferred to slices 005 / v2 admin. --}}
+<aside class="sidebar">
+  <div class="ws-switch">
+    <div class="ws-switch-mark">{{ (workspace.name || 'M').slice(0, 1).toUpperCase() }}</div>
+    <div class="ws-switch-meta">
+      <div class="ws-switch-name">{{ workspace.name }}</div>
+      <div class="ws-switch-slug">/{{ workspace.slug }}</div>
+    </div>
+    <span class="ws-switch-chevron" aria-hidden="true">›</span>
+  </div>
+
+  <div class="sb-section">
+    <div class="sb-section-hd">
+      <span class="sb-section-eyebrow">Spaces</span>
+      <a class="sb-section-add" href="/workspaces/{{ workspace.slug }}/spaces/new" aria-label="Create space">+</a>
+    </div>
+    <ul class="sb-spaces">
+      @each(s in sidebarSpaces)
+        <li>
+          <a class="sb-space-item" href="/workspaces/{{ workspace.slug }}/spaces/{{ s.slug }}">
+            <span class="sb-space-name">{{ s.name }}</span>
+            <span class="sb-space-template">{{ s.template }}</span>
+          </a>
+        </li>
+      @end
+    </ul>
+  </div>
+
+  <div class="sb-foot">
+    <div class="sb-foot-avatar">{{ (user.email || '?').slice(0, 1).toUpperCase() }}</div>
+    <div class="sb-foot-meta">
+      <div class="sb-foot-name">{{ user.email }}</div>
+      <div class="sb-foot-role">{{ membershipRole || 'member' }}</div>
+    </div>
+  </div>
+</aside>

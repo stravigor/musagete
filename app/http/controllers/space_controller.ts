@@ -39,13 +39,27 @@ export default class SpaceController {
    * list (id + label) to drive the wizard.
    */
   async newForm(ctx: Context) {
+    const user = ctx.get<CurrentUser>('user')
     const workspace = ctx.get<{ id: number; slug: string; name: string }>('workspace')
+    const membershipRole = ctx.get<string>('membershipRole')
     const templates = Object.values(SPACE_TEMPLATES).map((t) => ({
       id: t.id,
       label: TEMPLATE_LABELS[t.id] ?? t.id,
       defaults: t.defaults,
     }))
-    return ctx.view('spaces/new', { workspace, templates })
+    const sidebarSpaces = (await sql`
+      SELECT "slug", "name", "template"
+      FROM "space"
+      ORDER BY "id" ASC
+    `) as Array<{ slug: string; name: string; template: string }>
+
+    return ctx.view('spaces/new', {
+      user,
+      workspace,
+      membershipRole,
+      templates,
+      sidebarSpaces,
+    })
   }
 
   /**
@@ -54,7 +68,9 @@ export default class SpaceController {
    * contract; under `tenantContext` so RLS scopes the queries.
    */
   async show(ctx: Context) {
+    const user = ctx.get<CurrentUser>('user')
     const workspace = ctx.get<{ id: number; slug: string; name: string }>('workspace')
+    const membershipRole = ctx.get<string>('membershipRole')
     const spaceSlug = ctx.params.space_slug
 
     const spaces = (await sql`
@@ -90,7 +106,22 @@ export default class SpaceController {
       docs,
     }))
 
-    return ctx.view('spaces/show', { workspace, space, folders })
+    // Sidebar uses the workspace's full spaces list — separate SELECT so
+    // we don't conflate the "single space lookup" with the chrome data.
+    const sidebarSpaces = (await sql`
+      SELECT "slug", "name", "template"
+      FROM "space"
+      ORDER BY "id" ASC
+    `) as Array<{ slug: string; name: string; template: string }>
+
+    return ctx.view('spaces/show', {
+      user,
+      workspace,
+      membershipRole,
+      space,
+      folders,
+      sidebarSpaces,
+    })
   }
 
   /**

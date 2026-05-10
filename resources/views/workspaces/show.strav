@@ -1,34 +1,34 @@
-@layout('layouts/app')
+@layout('layouts/shell')
 
-@section('content')
-  <h1>{{ workspace.name }}</h1>
-  <p class="meta">
-    <code>/{{ workspace.slug }}</code>
-    · you're signed in as <strong>{{ user.email }}</strong>
-    · role: {{ membershipRole }}
-  </p>
+@section('shell-content')
+  <div class="page-container">
+    <h1 class="page-title">{{ workspace.name }}</h1>
+    <p class="page-meta">
+      <code>/{{ workspace.slug }}</code>
+      · signed in as <strong>{{ user.email }}</strong>
+      · role: <span class="chip"><span class="chip-dot"></span>{{ membershipRole }}</span>
+    </p>
 
-  <h2>Spaces</h2>
-  @if(spaces.length === 0)
-    <p>
-      No spaces yet. <a href="/workspaces/{{ workspace.slug }}/spaces/new">Create your first space</a>
-      to seed a folder tree from one of six templates.
-    </p>
-  @else
-    <ul class="spaces">
-      @each(space in spaces)
-        <li>
-          <a href="/workspaces/{{ workspace.slug }}/spaces/{{ space.slug }}">
-            <strong>{{ space.name }}</strong>
-          </a>
-          <span class="space-meta">
-            template: {{ space.template }} · visibility: {{ space.visibility }}
-          </span>
-        </li>
-      @end
-    </ul>
-    <p>
-      <a class="btn" href="/workspaces/{{ workspace.slug }}/spaces/new">+ New space</a>
-    </p>
-  @end
+    <h2 class="page-section">Spaces</h2>
+    @if(spaces.length === 0)
+      <p>
+        No spaces yet. <a class="link-accent" href="/workspaces/{{ workspace.slug }}/spaces/new">Create your first space</a>
+        to seed a folder tree from one of six templates.
+      </p>
+    @else
+      <ul class="page-list">
+        @each(space in spaces)
+          <li>
+            <a class="list-row" href="/workspaces/{{ workspace.slug }}/spaces/{{ space.slug }}">
+              <span class="list-row-title">{{ space.name }}</span>
+              <span class="list-row-meta">{{ space.template }} · {{ space.visibility }}</span>
+            </a>
+          </li>
+        @end
+      </ul>
+      <p>
+        <a class="btn btn--primary" href="/workspaces/{{ workspace.slug }}/spaces/new">+ New space</a>
+      </p>
+    @end
+  </div>
 @end

@@ -1,11 +1,15 @@
 @layout('layouts/app')
 
 @section('content')
-  <h1>Create your first workspace</h1>
-  <p>
-    A workspace is a tenant boundary. Everything you create — spaces, docs,
-    memberships — lives inside one workspace, isolated from every other
-    workspace's data.
-  </p>
-  <vue:workspace-form/>
+  <div class="page-bleed">
+    <div class="page-container narrow">
+      <h1 class="page-title">Create your first workspace</h1>
+      <p class="page-deck">
+        A workspace is a tenant boundary. Everything you create — spaces, docs,
+        memberships — lives inside one workspace, isolated from every other
+        workspace's data.
+      </p>
+      <vue:workspace-form/>
+    </div>
+  </div>
 @end
