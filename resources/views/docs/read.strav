@@ -1,7 +1,7 @@
 @layout('layouts/shell')
 
-@section('shell-content')
-  <article class="reader-page">
+@section('shell_content')
+  <article class="read reader-page">
     <div class="doc-eyebrow">{{ space.name }} · {{ doc.folderPath }}</div>
     {!! html !!}
   </article>

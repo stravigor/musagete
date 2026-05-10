@@ -1,6 +1,6 @@
 @layout('layouts/shell')
 
-@section('shell-content')
+@section('shell_content')
   <div class="page-container">
     <p class="page-eyebrow">{{ space.template }} · {{ space.visibility }}</p>
     <h1 class="page-title">{{ space.name }}</h1>

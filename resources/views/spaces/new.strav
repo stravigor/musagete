@@ -1,6 +1,6 @@
 @layout('layouts/shell')
 
-@section('shell-content')
+@section('shell_content')
   <div class="page-container">
     <h1 class="page-title">Create a space in {{ workspace.name }}</h1>
     <p class="page-deck">

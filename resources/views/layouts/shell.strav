@@ -31,7 +31,7 @@
     <main class="app-main">
       @include('partials/topbar')
       <div class="app-content">
-        @show('shell-content')
+        @show('shell_content')
       </div>
     </main>
   </div>

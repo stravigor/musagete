@@ -108,12 +108,5 @@ Scenario 5: Code block renders with Shiki syntax tokens
 
 - [ ] BDD scenarios all green, including the user-flow Scenario 1 asserted via either Playwright or a no-JS HTML fixture test.
 - [ ] Round-trip-shape test: a fixture markdown file → rendered HTML → assert specific class-attribute pairs (`.lede` on first p after h1; mermaid block becomes `<div class="diagram"><svg>`; code block has `.codeblock` + `.tok-*` tokens).
-- [ ] **Smoke-check (browser):** a human runs `bun run dev`, signs in, walks the slice-001 + slice-002 + slice-003 flow:
-  1. `/auth` → sign in → `/`
-  2. `/workspaces/acme` → workspace landing in the shell
-  3. `/workspaces/acme/spaces/new` → wizard with the design's modal/template-card layout
-  4. `/workspaces/acme/spaces/platform` → space read view in the shell
-  5. Click a seeded doc → `/workspaces/acme/spaces/platform/d/welcome-runbook` → editorial typography (Newsreader, drop cap, marginalia, design colors)
-  6. (If accent / theme cookies set) → confirm theme/density/accent visibly reflect
-
-  Recorded under "Smoke-check" in this slice's Integrate-T1 entry per AGON.
+- [ ] **Smoke-check — automated (behavioral):** `bun test ./tests/spaces/slice-003-demo.flow.ts` exits 0. The flow signs in via captured magic-link mail, creates the `acme-cloud` workspace, walks the wizard to create a `platform` engineering space, opens the seeded `Welcome to Runbooks` doc, and asserts editorial typography (Newsreader serif on `<h1>`, drop-cap font-size > 40px on `.lede::first-letter`). URL transitions and redirect chains are part of the flow's assertions.
+- [ ] **Smoke-check — visual (human):** a human runs `bun run dev`, walks the same flow, and confirms the design fidelity an automated harness can't reason about: drop-cap weight matches the design source, Mermaid diagrams render as SVGs (not the `<pre>` fallback), code blocks carry `.tok-*` classes mapped to the design accent, marginalia floats right ≥ 1100px, dark-mode swap looks right (theme cookie set, paper goes near-black, ink goes warm-cream). Recorded as a checklist under "Smoke-check (visual)" in this slice's Integrate-T1 entry per AGON's visual / behavioral split (see `method/05-ceremonies.md` § What may not be deferred).

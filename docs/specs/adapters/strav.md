@@ -147,6 +147,41 @@ A Build Turn cannot advance unless `bun test` exits 0 globally.
 
 ---
 
+## 4b. Smoke-check automation
+
+**Mode:** automated (with human visual review).
+
+**Primitive:** `@strav/testing`'s `BrowserTestCase` (Playwright + ephemeral Bun server + captured mail). Per-slice "demo flow" files live under `tests/<slice-folder>/<slice-NNN>-demo.flow.ts` and are runnable via `bun test ./tests/<slice-folder>/<slice-NNN>-demo.flow.ts`. The framework's opinionated `DemoFlow` wrapper is sufficient for vanilla Strav apps; musagete uses the project-local `MusageteDemoFlow` (`tests/utils/musagete_demo_flow.ts`) because the project owns its own session cookie (`musagete_session`, distinct from the framework default `strav_session` so OAuth-state and our session don't collide). All other DSL methods (`goto`, `click`, `fill`, `expectVisible`, `expectComputedStyle`, mail capture) come straight from `BrowserTestCase`.
+
+**Setup (one-time per workstation):**
+
+```sh
+bun add -D playwright-core
+bun x playwright install chromium    # ~150 MB Chromium binary, cached at ~/Library/Caches/ms-playwright
+```
+
+CI caches `~/Library/Caches/ms-playwright` (macOS) or `~/.cache/ms-playwright` (Linux) so subsequent runs skip the download.
+
+**Per-slice flow file conventions:**
+
+- One flow file per slice, scoped to that slice's *new* surface; prior-slice preambles (sign-in, workspace creation, …) are reused via `MusageteDemoFlow` fixture composition once the second flow file is authored.
+- Every flow boots with `fresh: true` (programmatic `bun strav fresh`); each slice's flow is a self-contained walk against a clean DB, so flows don't have to assume each other's residual state.
+- Behavioral assertions only: URL transitions, redirect chains, set-cookie attributes, hydration of Vue islands, computed-style equality (font fidelity, drop-cap size, accent colour).
+- Visual assertions stay manual — the slice's DoD splits the smoke-check into an automated *behavioral* line and a manual *visual* line per AGON's visual / behavioral split (see `method/05-ceremonies.md` § What may not be deferred).
+
+**Build Turn DoD line (replaces the prose smoke-check used by slice 002 and earlier):**
+
+```
+- [ ] Smoke-check — automated (behavioral): `bun test ./tests/<slice>/slice-NNN-demo.flow.ts` exits 0.
+- [ ] Smoke-check — visual (human): the design-fidelity items the harness can't reason about (typography polish, dark-mode swap, marginalia, …) ack'd in the Integrate-T1 entry's "Smoke-check (visual)" subsection.
+```
+
+**Pre-flight rule:** Every slice's Tech Spec § Plan must name the slice's flow file path before Build-T1 opens. Slices that ship UI without an authorable flow file are a planning gap — surface it in the slice's Pre-act before signing.
+
+**Reference flow:** `tests/spaces/slice-003-demo.flow.ts` — the seed flow that exercises slice-001 + slice-002 + slice-003 surfaces end-to-end. Future slices' flow files extend from this one.
+
+---
+
 ## 5. Destructive commands — AI must never run
 
 ```sh
@@ -346,6 +381,13 @@ Changed: `§1. Pipeline step map`
 From:    *(no "Hand-written endpoint tail" sub-table — the pipeline implicitly assumed every endpoint came from `generate:api` against a schema)*
 To:      *(added a sub-table after the main pipeline, before the UI tail, with rows 5a–5d for hand-written controller, route file, service, and policy)*
 Why:     Slices 001 (auth: magic-link + OAuth + TOTP flows), 004 (AI authoring streaming endpoints), 005 (search palette + Ask-the-KB), and 006 (review + AI summary) all introduce endpoints that have **no schema source** — `generate:api` only emits CRUD-shaped surfaces. Without a hand-written tier, the adapter under-described how those slices ship, and the slice DoDs were citing `routes/<area>.ts` paths the adapter never named. The new sub-table makes the bespoke path first-class without disturbing the main pipeline numbering or the §2 checkpoint placement.
+By:      Liva
+
+### 2026-05-10 — Add §4b Smoke-check automation (BrowserTestCase + DemoFlow)
+Changed: New section `§4b. Smoke-check automation` between `§4. Test command` and `§5. Destructive commands`.
+From:    *(no smoke-check automation section — every slice's DoD shipped a prose smoke-check checklist that a human walked manually; "Smoke-check passed by … on …" was attested in `30-log.md`. Tracked as `docs/notes/strav-testing-browser-smoke-check.md`.)*
+To:      *(added §4b naming `BrowserTestCase` / `DemoFlow` as the per-slice automation primitive, the `MusageteDemoFlow` project-local wrapper rationale, the playwright-core install line, the per-slice flow-file conventions, the visual-vs-behavioral DoD split, the pre-flight rule that every Tech Spec § Plan name its flow file before Build opens, and `tests/spaces/slice-003-demo.flow.ts` as the reference flow.)*
+Why:     `@strav/testing` shipped `BrowserTestCase` + `DemoFlow` between slice 002 and slice 003 (see `node_modules/@strav/testing/src/browser/`). The AGON method update of 2026-05-09 added a binding "Smoke-check automation" section to `templates/adapter.md`; this amendment fills that section in for the Strav adapter, retiring the prose-checklist pattern slice 002 used. Slice 003 is the first slice that ships an automated flow (`tests/spaces/slice-003-demo.flow.ts`); the flow caught two real defects on its first green run (`reader-page` class mismatch in `read.strav` blocking `.read` typography rules; `@show('shell-content')` codegen breaking on the hyphen). Manual visual review is preserved as the second DoD line — the harness can't reason about drop-cap weight, marginalia placement, or dark-mode swap.
 By:      Liva
 
 ### 2026-05-09 — Cite Design V8 (subpath imports) in §1
