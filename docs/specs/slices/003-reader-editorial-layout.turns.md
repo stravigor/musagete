@@ -3,7 +3,7 @@
 ```
 slice_id:    003-reader-editorial-layout
 started:     2026-05-09
-last_turn:   Build-T1
+last_turn:   Integrate-T1
 ```
 
 *References:*
@@ -270,3 +270,149 @@ postconditions:
 ```
 
 *(Halting first pass for the human smoke-check. Retroactive Vue-island theming + BDD tests + 3-column reader-grid are queued as the follow-up Micro-Turn(s) inside T1 once smoke-check passes.)*
+
+**work — Micro-Turn (smoke-check automation, 2026-05-10)**
+
+When the human went to walk the smoke-check, the same regression pattern that drove `docs/notes/agon-vertical-slicing-enforcement.md` resurfaced: the manual flow takes ~3 minutes per re-walk, gets boring on the 5th repeat, and a 200-instead-of-302 redirect is exactly the class of bug the human eye skips past. The framework note proposing an automated primitive (`docs/notes/strav-testing-browser-smoke-check.md`) was authored, fed back to the AGON method (commit `61c5c43` in the method repo), and `@strav/testing` shipped `BrowserTestCase` + `DemoFlow` upstream the same day.
+
+This Micro-Turn wires the new framework primitive into musagete:
+
+1. **`tests/utils/musagete_demo_flow.ts`** — project-local wrapper around `BrowserTestCase`. Reimplements the magic-link → cookie inject dance using `SESSION_COOKIE_NAME` (musagete owns `musagete_session`, distinct from the framework default `strav_session` so OAuth state and our session don't collide). Boots with `auth: false` (we don't use Strav's `Auth`/`SessionManager`), registers musagete's `MailProvider` + `ViewProvider`, and sets `__islandsSrc` to `/builds/islands.js` so server-rendered island markers find the pre-built bundle without running `IslandBuilder` at test time. Two upstream gaps surfaced and noted: `signInWithMagicLink` hardcodes `strav_session` (`docs/notes/strav-testing-app-cookie-name.md`), and `@show('a-b')` codegen breaks on hyphens (`docs/notes/strav-view-show-hyphen-codegen.md`).
+2. **`tests/spaces/slice-003-demo.flow.ts`** — full slice-001 + slice-002 + slice-003 walk: magic-link sign-in via captured mail → `/workspaces/new` form → POST → `/workspaces/acme-cloud` → `/spaces/new` wizard (4 steps) → `/spaces/platform` → click "Welcome to Runbooks" → assert URL ends `/d/welcome-runbook`, h1 font-family contains `Newsreader`, `.lede::first-letter` font-size > 40px. 60s test timeout (Chromium cold launch + fresh DB rebuild + redirect chain). Runs in ~2.5s once warm.
+3. **`start/view_globals.ts`** — extracted the index.ts `onBooted` setGlobal block so the test bootstrap installs the same view defaults without the production listener + island-builder watch loop.
+4. **Two real defects caught on first green run.** (a) `read.strav` wrapped its `<article>` in `class="reader-page"` while `_typography.scss` targets `.read` — CSS rules silently didn't apply to seeded docs in the manual smoke-check (the human read the markdown but not the editorial typography). Fix: `class="read reader-page"`. (b) `shell.strav` used `@show('shell-content')` and the `@strav/view` compiler injects section names as raw JS identifiers; the hyphen broke parsing (`typeof shell-content` → `typeof shell - content` → `ReferenceError: content is not defined`). Fix: rename section to `shell_content` across `layouts/shell.strav` + the four child views (`workspaces/show.strav`, `spaces/show.strav`, `spaces/new.strav`, `docs/read.strav`). The flow file caught this instantly with a 500 response on `/workspaces/<slug>` — exactly the behavioral regression the manual smoke-check would have shipped past, since the workspace landing isn't typography-loud.
+5. **Adapter and slice DoD updated.** `docs/specs/adapters/strav.md` gained §4b "Smoke-check automation" naming `BrowserTestCase`/`DemoFlow`/`MusageteDemoFlow` and the visual-vs-behavioral split the AGON method now mandates. The slice 003 DoD smoke-check line replaced the prose checklist with two lines: automated (the flow file exits 0) + visual (human review).
+6. **Framework-issue note retired.** `docs/notes/strav-testing-browser-smoke-check.md` deleted — upstream landed the proposal verbatim. Mirrors the slice-001 / slice-002 framework-note removal pattern.
+
+**work — scope-split (Tech Spec amendment, 2026-05-10)**
+
+The deferred-within-T1 items — Vue island retheme to the design source (AuthForm/WorkspaceForm/CreateSpaceWizard), BDD scenario tests + round-trip-shape test, 3-column reader grid (`.toc` + `.margin-note`) — close T1 by being scope-split out of slice 003 into a new backlog row, not by being completed inside this Turn.
+
+The slice 003 DoD's primary acceptance (Scenario 1 — signed-in user opens a doc and sees editorial typography) is met by the automated flow file's behavioral assertions plus the human visual review at Integrate. Scenarios 2–5 (theme/density/accent persistence, Mermaid SVG, Shiki tokens) assert invariants the read path already carries; their formal BDD-test coverage is independent of the slice's vertical-slicing demonstrability claim. The Vue island retheme is genuinely larger than a Micro-Turn (auth.jsx is a multi-section editorial canvas; spaces.jsx is a redesigned 4-step modal) — it's slice-shaped, not refinement-shaped. The 3-column reader grid is a composability feature whose acceptance is "marginalia visible at ≥1100px width" — also slice-shaped given it ships its own `.toc` + `.margin-note` rendering rules.
+
+The receiving backlog row is **slice 008 — Reader polish + island retheme**, depending on slice 003. Per `templates/tech-spec.md` § Post-signature changes — scope-split, the amendment is recorded with From / To / Why + Downstream impact + Defers observable surface? fields. Recorded next.
+
+**outputs (Micro-Turn + scope-split)**
+
+```yaml
+- tests/utils/musagete_demo_flow.ts                              new          — BrowserTestCase wrapper handling musagete_session cookie + view-globals + MailProvider boot
+- tests/spaces/slice-003-demo.flow.ts                             new          — automated end-to-end smoke-check (sign-in → workspace → wizard → reader, with computed-style assertions)
+- start/view_globals.ts                                          new          — extracted setupViewGlobals() so test bootstrap reuses index.ts's onBooted defaults
+- index.ts                                                        edited       — onBooted now calls setupViewGlobals() instead of inlining setGlobal calls
+- resources/views/layouts/shell.strav                             edited       — @show('shell-content') → @show('shell_content') (hyphen breaks @strav/view codegen)
+- resources/views/workspaces/show.strav                           edited       — @section('shell-content') → @section('shell_content')
+- resources/views/spaces/show.strav                               edited       — @section('shell-content') → @section('shell_content')
+- resources/views/spaces/new.strav                                edited       — @section('shell-content') → @section('shell_content')
+- resources/views/docs/read.strav                                 edited       — class="reader-page" → class="read reader-page" + @section rename; .read typography rules now apply
+- docs/specs/adapters/strav.md                                    edited       — new §4b Smoke-check automation; amendment-log entry
+- docs/specs/slices/003-reader-editorial-layout.md                edited       — DoD smoke-check line split into automated (behavioral) + visual (human)
+- docs/specs/slices/003-reader-editorial-layout.tech.md           edited       — scope-split amendment (deferred items punted to slice 008)
+- docs/notes/strav-testing-browser-smoke-check.md                 deleted      — upstream landed; @strav/testing now ships BrowserTestCase + DemoFlow
+- docs/notes/strav-testing-app-cookie-name.md                     new          — follow-up for hardcoded strav_session cookie picker
+- docs/notes/strav-view-show-hyphen-codegen.md                    new          — follow-up for @show codegen breaking on hyphenated section names
+- bun.lock + package.json                                         edited       — bun add -D playwright-core (Chromium binary cached at ~/Library/Caches/ms-playwright)
+- database/migrations/{1778343040543 → 1778385599645}              renamed      — `bun strav fresh` regenerated migration timestamp; schema content identical
+```
+
+**postconditions — Build-T1 close**
+
+```yaml
+postconditions:
+  # Foundation (T0) — already ticked above.
+  # Reader (T1):
+  - [x] resources/views/docs/read.strav renders the seeded "Welcome to Runbooks" doc end-to-end with zero Vue islands; verified by tests/spaces/slice-003-demo.flow.ts.
+  - [x] GET /workspaces/:slug/spaces/:space_slug/d/:doc_slug responds 200 under currentUser + tenantContext + spacePolicy.canViewSpace; verified by the flow file.
+  - [x] markdown-it pipeline (footnote / anchor / attrs / task-lists), Shiki, Mermaid all wired at boot; .lede class on first paragraph after <h1>; ` ```mermaid ` → server-side <svg>; ` ```<lang> ` → Shiki .tok-* tokens.
+  - [x] markdown-it-anchor populates heading IDs (used by the deferred TOC; rule survives the scope-split because the IDs are emitted regardless).
+  - [x] Theme/density/accent default cookies wired; layout reads data-* attributes and inline --accent.
+
+  # App shell (T1, minimal):
+  - [x] Sidebar partial: workspace switcher card + space-level Spaces tree + user footer.
+  - [x] Topbar partial: breadcrumbs only.
+  - [x] Auth view stays full-bleed; workspace forms / space view / wizard / reader inhabit the shell.
+
+  # Retroactive theming pass — SCOPE-SPLIT to slice 008 per the Tech Spec amendment recorded next:
+  - [N/A] AuthForm.vue / WorkspaceForm.vue / CreateSpaceWizard.vue retheme to design source — slice 008.
+  - [N/A] auth/sign_in.strav full-bleed split + workspaces/{new,show}.strav + spaces/{new,show}.strav shell wrap — partially done (shell wrap landed in T1 first pass); design-faithful split-canvas auth shipping in slice 008.
+
+  # Quality gates:
+  - [N/A] BDD scenarios 1–5 unit-test coverage — scope-split to slice 008. Scenario 1 is covered behaviorally by the flow file (the slice's primary acceptance); Scenarios 2–5 are invariants the read path carries that get formal tests in 008.
+  - [N/A] Round-trip-shape test (markdown fixture → rendered HTML → assert .lede / .diagram / .codeblock / .tok-*) — scope-split to slice 008.
+  - [x] **Smoke-check (automated, behavioral):** `bun test ./tests/spaces/slice-003-demo.flow.ts` exits 0 (1 pass / 0 fail / ~2.5s warm). Asserts URL transitions, redirect chains, computed font-family contains "Newsreader" on h1, computed `.lede::first-letter` font-size > 40px.
+  - [ ] **Smoke-check (visual, human):** human-walked review of typography fidelity (drop-cap weight + accent color), Shiki theme propagation, Mermaid SVG render (vs `<pre>` fallback), dark-mode swap. Recorded in this slice's Integrate-T1 entry's Smoke-check (visual) subsection.
+  - [x] Full test suite (`bun test`) passes — 19 pass / 1 skip / 0 fail / 147 expect() calls (the flow file is invoked separately by path; bun:test discovery only matches `*.test.ts` / `*.spec.ts`).
+  - [x] No source-code changes in slice 001 / slice 002 surfaces beyond the .strav section-name rename driven by the framework codegen bug.
+```
+
+**decision (Build-T1):** `advance` — Liva, 2026-05-10. The Build-T1 record closes here; Integrate-T1 opens.
+
+---
+
+### `Integrate-T1` — Tech Spec amendment (scope-split), log entry, backlog update, slice file flip
+
+```yaml
+id:             Integrate-T1
+phase:          Integrate
+intent:         Close slice 003 by recording the scope-split amendment in the Tech Spec (deferred items punted to a new slice 008), authoring the integrate-phase log entry per slice 002's shape, updating 20-backlog.md (row 3 drafted → shipped + new row 8 for the scope-split target), and flipping the slice file (status: built → shipped, owner_turn: Build-T1 → Integrate-T1).
+owner:          ai
+inputs:
+  - ./003-reader-editorial-layout.md            (slice — status: built as of T1 close 2026-05-10)
+  - ./003-reader-editorial-layout.tech.md       (Tech Spec — Signed; amended once at T0 close; about to gain a second amendment)
+  - ./003-reader-editorial-layout.turns.md      (Build-T0 + Build-T1 + Build-T1 close)
+  - ../30-log.md § Slice 002                     (template for the Integrate entry shape)
+  - ../20-backlog.md                             (row 3 to update + new row 8)
+  - ../../method/templates/tech-spec.md § Post-signature changes — Scope-split  (amendment shape)
+
+preconditions:
+  - Build-T1 closed `advance`.
+  - The flow file's first green run is the behavioral acceptance of Scenario 1 (the slice's primary acceptance per AGON's user-flow-scenario rule).
+  - The deferred items have an explicit receiving slice in the backlog so cumulative demonstrability is preserved (slice 8 ships the formal BDD coverage + reader polish; slice 4's editor depends on slice 3's read path which is shipped here).
+```
+
+**work**
+
+1. **Recorded the scope-split amendment** in `003-reader-editorial-layout.tech.md`'s Amendment log. Per `templates/tech-spec.md` § Post-signature changes, the entry uses the Scope-split shape (Changed / From / To / Why / Downstream impact / Defers observable surface? / By). The deferred items move to slice 008 with explicit demo flow.
+2. **Wrote the slice 003 entry in `docs/specs/30-log.md`** mirroring slice 002's shape: header (Built in / Shipped / Commit / Turn chain), What was built, Acceptance criteria → verification (Scenario 1 covered by the flow file, Scenarios 2–5 punted to slice 008), the new Smoke-check subsection (automated path + visual path with the human's checklist), What surprised us (smoke-check automation landed mid-slice; two real defects caught by the flow file's first run), framework-DSL learnings (the `@show` hyphen footgun, the cookie-name hardcoding), Harness signals, Follow-ups, Signed.
+3. **Updated `docs/specs/20-backlog.md`** — row 3 status `drafted` → `shipped`; notes column references the log entry. Added row 8 for the scope-split target. Re-ordering history gained a 2026-05-10 entry naming the scope-split + the smoke-check automation milestone.
+4. **Flipped the slice file** — `status: built → shipped`, `owner_turn: Build-T1 → Integrate-T1`. Filled the Built / Shipped status block.
+
+**outputs**
+
+```yaml
+- docs/specs/slices/003-reader-editorial-layout.tech.md           edited       — Amendment log gained the scope-split entry (deferred items → slice 008)
+- docs/specs/30-log.md                                            edited       — appended slice 003 Integrate-T1 entry mirroring slice 002's shape, with new Smoke-check subsection
+- docs/specs/20-backlog.md                                         edited       — row 3 drafted → shipped; new row 8 for scope-split target; re-ordering history entry
+- docs/specs/slices/003-reader-editorial-layout.md                edited       — status: shipped, owner_turn: Integrate-T1; Built/Shipped status filled
+- docs/specs/slices/003-reader-editorial-layout.turns.md          edited       — last_turn: Integrate-T1; this Integrate-T1 record appended
+```
+
+**postconditions**
+
+```yaml
+postconditions:
+  - [x] `docs/specs/30-log.md` has a slice 003 entry; entry is structurally consistent with slice 002's shape (same section headers + new Smoke-check subsection per the AGON method update).
+  - [x] `docs/specs/20-backlog.md` row 3 status is `shipped`; row 8 lists the scope-split items with explicit demo flow; re-ordering history records the date.
+  - [x] Slice file header reads `status: shipped, owner_turn: Integrate-T1`; Built / Shipped status block filled with commit SHAs.
+  - [x] Tech Spec amendment log shows the scope-split entry with all six fields.
+  - [x] Turns file header `last_turn` reads `Integrate-T1`.
+  - [x] No source-code changes in this Turn (Integrate is spec + log work only).
+  - [x] `bun test` still passes (19 pass / 1 skip / 0 fail). The flow file (`bun test ./tests/spaces/slice-003-demo.flow.ts`) still exits 0.
+```
+
+**Smoke-check (visual, human review)**
+
+To be recorded here by Liva as the visual half of the smoke-check. Default checklist:
+
+- [ ] Newsreader serif on `<h1>`/`<h2>` reads editorial; weight + opsz axis matches the design handoff.
+- [ ] `.lede::first-letter` drop cap renders in accent color (terracotta `#B8442C`); float-left + line-height harmony with the lede paragraph.
+- [ ] Code blocks render with Shiki `.tok-*` token classes mapped to design accents (light + dark themes).
+- [ ] Mermaid fenced blocks render as inline `<svg>`, not the `<pre>` fallback.
+- [ ] Sidebar Spaces tree + workspace switcher card readable; user footer shows the email.
+- [ ] Breadcrumbs reflect the workspace → space → doc path.
+- [ ] (If a `musagete_theme=dark` cookie is set) `<html data-theme="dark">` attaches; paper goes near-black, ink goes warm-cream.
+
+**Signed**
+
+- Integrate-T1 closed by: <to be signed by Liva>
+
+*(Slice 003 shipped. Next-up per `20-backlog.md`: slice 004 — Editor (TipTap + AI authoring slash commands), depending on the read path shipped here. Slice 008 — Reader polish + island retheme — sits at the end of the backlog and gets sequenced by Planning when its dependencies (current slice 003) and prerequisites (design source under `documents/musagete/`) are both stable.)*
